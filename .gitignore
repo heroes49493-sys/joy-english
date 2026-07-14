@@ -1,0 +1,9 @@
+node_modules/
+config.json
+.DS_Store
+
+# GitHub Pages solo sirve archivos estáticos: el server.js del análisis con IA
+# (opcional, local, no está en uso) no tiene cabida aquí y nunca debe publicarse
+server.js
+package.json
+package-lock.json
