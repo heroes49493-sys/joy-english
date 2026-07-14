@@ -99,6 +99,7 @@
     rate: 0.95,
     voice: "",
     sounds: true,
+    liveTyping: true,       // letras verde/rojo mientras escribes
     autoplay: true,
     autoAdvance: true
   });
@@ -157,6 +158,7 @@
     // La bienvenida es solo para cuentas nuevas: si ya hay progreso, no molestar
     if (raw.welcomed === undefined && (raw.points || 0) > 0) s.welcomed = true;
     if (!Array.isArray(s.pinnedCols)) s.pinnedCols = ["ft1"];
+    if (!(s.settings.sessionLength > 0)) s.settings.sessionLength = 10;
     if (!s.records || typeof s.records !== "object") s.records = {};
     s.records = { bestTimed: 0, bestCombo: 0, bestDays: 0, talks: 0, ...s.records };
     s.streak = { count: 0, lastDate: null, freezes: 0, ...s.streak };
@@ -295,6 +297,18 @@
     el.textContent = text;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 1950);
+  }
+
+  // Letras en verde/rojo mientras escribes (estilo juego de mecanografía):
+  // verde si la letra coincide con esa posición del objetivo, rojo si no.
+  // La comparación ignora mayúsculas, igual que la corrección final.
+  function colorizeTyped(typed, target) {
+    let html = "";
+    for (let i = 0; i < typed.length; i++) {
+      const ok = i < target.length && typed[i].toLowerCase() === target[i].toLowerCase();
+      html += `<span class="${ok ? "tl-ok" : "tl-bad"}">${escapeHtml(typed[i])}</span>`;
+    }
+    return html;
   }
 
   function animate(el, cls) {
@@ -979,6 +993,8 @@
     $("feedback").className = "feedback";
     $("word-match").classList.add("hidden");
     $("help-panel").classList.add("hidden");
+    $("typing-live").classList.add("hidden");
+    $("typing-live").innerHTML = "";
     $("btn-next").classList.add("hidden");
 
     $("choices").classList.toggle("hidden", !isChoiceQuestion());
@@ -1809,11 +1825,18 @@
   // ---------- Ajustes ----------
   function openSettings() {
     const s = state.settings;
-    $("set-session").value = String(s.sessionLength);
+    const sesionSel = $("set-session");
+    sesionSel.value = String(s.sessionLength);
+    if (!sesionSel.value) {
+      const opciones = [...sesionSel.options].map((o) => Number(o.value));
+      sesionSel.value = String(opciones.reduce((mejor, o) =>
+        Math.abs(o - s.sessionLength) < Math.abs(mejor - s.sessionLength) ? o : mejor));
+    }
     $("set-goal").value = s.dailyGoal;
     $("set-newwords").value = s.newWordsPerDay;
     $("set-rate").value = s.rate;
     $("set-sounds").checked = s.sounds;
+    $("set-livetyping").checked = s.liveTyping;
     $("set-autoplay").checked = s.autoplay;
     $("set-autoadvance").checked = s.autoAdvance;
 
@@ -1833,12 +1856,13 @@
 
   function applySettings() {
     const s = state.settings;
-    s.sessionLength = Number($("set-session").value);
+    s.sessionLength = Number($("set-session").value) || 10;
     s.dailyGoal = Math.max(5, Number($("set-goal").value) || 20);
     s.newWordsPerDay = Math.max(5, Number($("set-newwords").value) || 20);
     s.rate = Number($("set-rate").value);
     s.voice = $("set-voice").value;
     s.sounds = $("set-sounds").checked;
+    s.liveTyping = $("set-livetyping").checked;
     s.autoplay = $("set-autoplay").checked;
     s.autoAdvance = $("set-autoadvance").checked;
     save();
@@ -1925,6 +1949,32 @@
 
   $("btn-help").addEventListener("click", showHelp);
 
+  function updateLiveTyping() {
+    if (!game.current) return;
+    const live = $("typing-live");
+    if (!state.settings.liveTyping) { live.classList.add("hidden"); return; }
+    const typed = $("answer-input").value;
+
+    if (game.mustRetype || isFullSentence()) {
+      // En dictado solo se colorea lo escrito: no se revela el resto de la oración
+      const target = game.mustRetype ? game.current.parsed.answer : game.current.parsed.full;
+      live.classList.toggle("hidden", !typed);
+      live.innerHTML = colorizeTyped(typed, target);
+      return;
+    }
+
+    live.classList.add("hidden");
+    const blank = $("blank");
+    if (!blank || game.answered) return;
+    const target = game.current.parsed.answer;
+    const blankLen = Math.max(4, target.length);
+    blank.innerHTML = typed
+      ? colorizeTyped(typed, target) + "_".repeat(Math.max(0, blankLen - typed.length))
+      : "_".repeat(blankLen);
+  }
+
+  $("answer-input").addEventListener("input", updateLiveTyping);
+
   $("answer-input").addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
     if (game.mustRetype) checkRetype();
@@ -1991,7 +2041,7 @@
     applySettings();
     $("settings-modal").close();
   });
-  ["set-session", "set-goal", "set-newwords", "set-voice", "set-rate", "set-sounds", "set-autoplay", "set-autoadvance"]
+  ["set-session", "set-goal", "set-newwords", "set-voice", "set-rate", "set-sounds", "set-livetyping", "set-autoplay", "set-autoadvance"]
     .forEach((id) => $(id).addEventListener("change", applySettings));
   $("settings-modal").addEventListener("close", applySettings);
 
@@ -2459,6 +2509,8 @@
     input.focus();
     $("drill-feedback").textContent = "";
     $("drill-feedback").className = "feedback";
+    $("drill-live").classList.add("hidden");
+    $("drill-live").innerHTML = "";
     $("btn-drill-check").textContent = "Comprobar";
   }
 
@@ -2554,6 +2606,15 @@
   $("btn-drill-say").addEventListener("click", () => {
     const e = drill.items[drill.pos];
     if (e) speak(e.fix);
+  });
+  $("drill-input").addEventListener("input", () => {
+    const dl = $("drill-live");
+    if (!state.settings.liveTyping) { dl.classList.add("hidden"); return; }
+    const e = drill.items[drill.pos];
+    if (!e || drill.awaitingNext) return;
+    const typed = $("drill-input").value;
+    dl.classList.toggle("hidden", !typed);
+    dl.innerHTML = colorizeTyped(typed, e.fix);
   });
   $("drill-input").addEventListener("keydown", (e) => {
     if (e.key === "Enter") checkDrill();

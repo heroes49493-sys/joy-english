@@ -2,14 +2,14 @@
 // Estrategia "red primero, caché de respaldo":
 //  - Con el servidor encendido, SIEMPRE baja la última versión (actualizas sin reinstalar).
 //  - Sin servidor (offline), la app sigue funcionando desde la caché.
-const CACHE = "joy-english-v16";
+const CACHE = "joy-english-v17";
 
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/styles.css?v=16",
-  "./js/data.js?v=16",
-  "./js/app.js?v=16",
+  "./css/styles.css?v=17",
+  "./js/data.js?v=17",
+  "./js/app.js?v=17",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

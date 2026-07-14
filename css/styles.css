@@ -1232,3 +1232,16 @@ body {
   flex-shrink: 0;
 }
 .shop-item button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ================= v17: letras verde/rojo al escribir ================= */
+.typing-live {
+  text-align: center;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 10px 12px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+.tl-ok { color: var(--green); }
+.tl-bad { color: var(--red); text-decoration: underline; }
