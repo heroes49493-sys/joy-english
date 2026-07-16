@@ -68,3 +68,12 @@ El tema actual es "negro + amarillo Joy". Opciones si quieres darle otro giro:
 - ~~Random Challenge~~ → 🎲 Reto sorpresa
 - ~~Contrarreloj~~ → ⚡ Contrarreloj 60s con récord
 - ~~Practicar errores~~ → 🏋️ Drill del Baúl (3 aciertos = vencido)
+
+## 💰 Idea guardada (2026-07-14, futuro — NO para los mazos del propio Adam)
+
+- **Mazos exclusivos desbloqueables con gemas**: los mazos de clase (importados de
+  PDF) podrían ofrecerse como contenido "premium" que se desbloquea con un pase
+  pagado en 💎 gemas desde la 🏪 Tienda — pensado para OTRAS personas que usen la
+  app y quieran acceso a material curado extra. Posible palanca de monetización o
+  de valor añadido sin romper el "100% gratis" del núcleo (Fast Track). Adam pidió
+  explícitamente que esto NO aplique a sus propios mazos — quedan siempre libres.

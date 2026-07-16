@@ -122,7 +122,8 @@
     pinnedCols: ["ft1"],      // colecciones incorporadas fijadas en el inicio
     records: { bestTimed: 0, bestCombo: 0, bestDays: 0, talks: 0 },
     gems: 0,                  // moneda de la tienda (independiente del XP, no se gasta el XP)
-    boosts: { doubleXpAnswers: 0, skipCapDate: null } // efectos activos comprados en la tienda
+    boosts: { doubleXpAnswers: 0, skipCapDate: null }, // efectos activos comprados en la tienda
+    bugReports: []            // 🚩 errores reportados en frases, para exportar y revisar
   });
 
   let state = load();
@@ -165,6 +166,7 @@
     if (typeof s.gems !== "number") s.gems = 0;
     if (!s.boosts || typeof s.boosts !== "object") s.boosts = {};
     s.boosts = { doubleXpAnswers: 0, skipCapDate: null, ...s.boosts };
+    if (!Array.isArray(s.bugReports)) s.bugReports = [];
     return s;
   }
 
@@ -202,7 +204,9 @@
   }
 
   function newWordsRemainingToday() {
-    if (state.boosts.skipCapDate === today()) return Infinity; // 🎫 pase de la tienda
+    // El 🎫 pase de la tienda está deshabilitado (ver SHOP_ITEM_DISABLED): se ignora
+    // el efecto aunque state.boosts.skipCapDate haya quedado guardado de una compra
+    // anterior, para que un pase ya comprado deje de aplicar en cuanto se actualice.
     const used = todayHistory().newWords || 0;
     return Math.max(0, state.settings.newWordsPerDay - used);
   }
@@ -291,12 +295,12 @@
     requestAnimationFrame(step);
   }
 
-  function showToast(text) {
+  function showToast(text, long = false) {
     const el = document.createElement("div");
-    el.className = "toast";
+    el.className = long ? "toast toast-long" : "toast";
     el.textContent = text;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 1950);
+    setTimeout(() => el.remove(), long ? 6000 : 1950);
   }
 
   // Letras en verde/rojo mientras escribes (estilo juego de mecanografía):
@@ -493,8 +497,13 @@
       .filter(Boolean);
   }
 
+  function isCoreFastTrack(colId) {
+    return /^ft\d+$/.test(colId);
+  }
+
   function buildRound(colId) {
     const size = state.settings.sessionLength;
+    game.lastRoundOmittedFresh = 0;
 
     if (colId === "__fav__") {
       const now = Date.now();
@@ -517,9 +526,24 @@
     });
     seen.sort((a, b) => a.due - b.due);
 
-    // Tope de palabras nuevas por día (10-20/día es lo que sostiene la retención
-    // sin saturar; más allá de eso solo acumulas repasos que no vas a poder sostener)
-    const freshCapped = fresh.slice(0, newWordsRemainingToday());
+    // Tope de palabras nuevas por día: SOLO aplica al currículo base (Fast Track
+    // 1-4), que es continuo y comparte el cupo entre sí a propósito. Un mazo que el
+    // usuario creó — de un PDF de su clase o a mano — debe regirse únicamente por
+    // "frases por ronda": lo creó para avanzarlo a su ritmo, no para que otro mazo
+    // le robe cupo sin que lo note.
+    let freshCapped = fresh;
+    if (isCoreFastTrack(col.id)) {
+      const remaining = newWordsRemainingToday();
+      freshCapped = fresh.slice(0, remaining);
+      // El aviso solo sale si el tope de verdad achicó ESTA ronda: una ronda de
+      // tamaño 10 en un mazo de 50 no pierde nada por el tope si el cupo (remaining)
+      // ya alcanzaba para llenarla igual. El número en el mensaje es cuántas frases
+      // del MAZO quedan pendientes para otro día, no cuánto se acortó esta ronda.
+      const sizeWithoutCap = Math.min(size, due.length + fresh.length + seen.length);
+      const sizeWithCap = Math.min(size, due.length + freshCapped.length + seen.length);
+      const capAffectedThisRound = sizeWithoutCap > sizeWithCap;
+      game.lastRoundOmittedFresh = capAffectedThisRound ? fresh.length - freshCapped.length : 0;
+    }
 
     return shuffle([...due, ...freshCapped, ...seen].slice(0, size));
   }
@@ -811,7 +835,8 @@
     points: 0, correct: 0, streak: 0, bestStreak: 0,
     answered: false, hintUsed: false, mustRetype: false, current: null,
     advanceTimer: null, answers: [], goalHit: false, helpLevel: 0,
-    wasTimed: false, timedEnd: null, timedInt: null
+    wasTimed: false, timedEnd: null, timedInt: null,
+    lastRoundOmittedFresh: 0 // cuántas frases frescas del mazo se quedaron fuera por el tope diario
   };
 
   function diffConf() {
@@ -882,6 +907,15 @@
         ? "🎉 Ya completaste tus palabras nuevas de hoy — vuelve mañana o repasa otro mazo"
         : "Ese mazo no tiene frases 😅");
       return;
+    }
+    // El tope de nuevas es GLOBAL (compartido entre todos los mazos): si ya jugaste
+    // otro mazo hoy, uno nuevo puede llegar con muchas menos frases de las que tiene.
+    if (game.lastRoundOmittedFresh > 0) {
+      showToast(
+        `🎫 Cupo diario: quedan ${game.lastRoundOmittedFresh} frases nuevas de este mazo para ` +
+        `otro día. Súbelo en ⚙️ Ajustes o compra un pase en 🏪 Tienda para verlas hoy.`,
+        true
+      );
     }
     beginRound(queue, colId);
   }
@@ -1205,7 +1239,9 @@
     const h = state.history[t] || { points: 0, played: 0, correct: 0, newWords: 0 };
     const beforePlayed = h.played;
     h.played++;
-    if (!prev) h.newWords = (h.newWords || 0) + 1; // primera vez que se ve esta frase
+    if (!prev && isCoreFastTrack(game.current.colId)) {
+      h.newWords = (h.newWords || 0) + 1; // primera vez que se ve esta frase del currículo base
+    }
 
     const fb = $("feedback");
     if (isCorrect) {
@@ -1589,7 +1625,12 @@
   }
 
   // ---------- 🏪 Tienda ----------
+  // 🎫 El pase de palabras nuevas queda deshabilitado (sigue visible en la tienda,
+  // solo no se puede comprar) hasta que se rediseñe su alcance.
+  const SHOP_ITEM_DISABLED = { skipcap: true };
+
   function canBuy(id) {
+    if (SHOP_ITEM_DISABLED[id]) return false;
     if (id === "freeze") return state.streak.freezes < MAX_FREEZES;
     return true;
   }
@@ -1619,15 +1660,16 @@
     wrap.innerHTML = "";
     Object.entries(SHOP_ITEMS).forEach(([id, item]) => {
       const maxedFreeze = id === "freeze" && state.streak.freezes >= MAX_FREEZES;
+      const disabled = SHOP_ITEM_DISABLED[id];
       const div = document.createElement("div");
-      div.className = "shop-item";
+      div.className = "shop-item" + (disabled ? " shop-item-disabled" : "");
       div.innerHTML = `
         <div class="shop-item-info">
           <div class="shop-item-name">${item.name}</div>
-          <div class="shop-item-desc">${item.desc}</div>
+          <div class="shop-item-desc">${disabled ? "Deshabilitado por ahora" : item.desc}</div>
         </div>
-        <button data-buy="${id}" ${state.gems < item.cost || maxedFreeze ? "disabled" : ""}>
-          ${maxedFreeze ? "Al máximo" : `💎 ${item.cost}`}
+        <button data-buy="${id}" ${disabled || state.gems < item.cost || maxedFreeze ? "disabled" : ""}>
+          ${disabled ? "No disponible" : maxedFreeze ? "Al máximo" : `💎 ${item.cost}`}
         </button>`;
       wrap.appendChild(div);
     });
@@ -1823,17 +1865,99 @@
   }
 
   // ---------- Ajustes ----------
+  // ---------- 🚩 Reportar error en una frase ----------
+  // No hay servidor: esto NO llega "en vivo" a Claude. Se guarda localmente y se
+  // exporta como texto para pegarlo en el chat, o dejarlo en EnGlish DATA./Reportes/.
+  let reportTarget = null; // { colId, idx, sentence, es }
+  let reportReason = null;
+
+  function openReportModal() {
+    if (!game.current) return;
+    reportTarget = {
+      colId: game.current.colId,
+      idx: game.current.idx,
+      sentence: game.current.parsed.full,
+      es: game.current.s.es
+    };
+    reportReason = null;
+    $("report-sentence-preview").textContent = `“${reportTarget.sentence}” — ${reportTarget.es}`;
+    $("report-note").value = "";
+    $("btn-report-send").disabled = true;
+    document.querySelectorAll("#report-reasons .diff-btn").forEach((b) => b.classList.remove("active"));
+    $("report-modal").showModal();
+  }
+
+  document.querySelectorAll("#report-reasons .diff-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      reportReason = btn.dataset.reason;
+      document.querySelectorAll("#report-reasons .diff-btn").forEach((b) =>
+        b.classList.toggle("active", b === btn));
+      $("btn-report-send").disabled = false;
+    });
+  });
+
+  function sendReport() {
+    if (!reportTarget || !reportReason) return;
+    state.bugReports.push({
+      id: `rep-${Date.now()}`,
+      date: today(),
+      colId: reportTarget.colId,
+      idx: reportTarget.idx,
+      sentence: reportTarget.sentence,
+      es: reportTarget.es,
+      reason: reportReason,
+      note: $("report-note").value.trim()
+    });
+    save();
+    showToast("🚩 Reporte guardado — expórtalo desde Ajustes cuando quieras");
+    $("report-modal").close();
+  }
+
+  function reportsToMarkdown() {
+    const lines = [
+      "# 🚩 Reportes de errores — Joy English",
+      "",
+      `Exportado: ${today()} · ${state.bugReports.length} reporte(s)`,
+      "",
+      "Pégale este archivo a Claude en el chat para que revise y arregle cada uno.",
+      ""
+    ];
+    state.bugReports.forEach((r, i) => {
+      const col = findCollection(r.colId);
+      lines.push(`## ${i + 1}. ${r.reason}`);
+      lines.push(`- Mazo: ${col ? col.name : r.colId} (${r.colId}, índice ${r.idx})`);
+      lines.push(`- Frase: "${r.sentence}" — ${r.es}`);
+      if (r.note) lines.push(`- Detalle: ${r.note}`);
+      lines.push(`- Fecha: ${r.date}`);
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  function exportReports() {
+    if (!state.bugReports.length) { showToast("No tienes reportes guardados"); return; }
+    const blob = new Blob([reportsToMarkdown()], { type: "text/markdown;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `joy-english-reportes-${today()}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   function openSettings() {
     const s = state.settings;
     const sesionSel = $("set-session");
     sesionSel.value = String(s.sessionLength);
     if (!sesionSel.value) {
-      const opciones = [...sesionSel.options].map((o) => Number(o.value));
-      sesionSel.value = String(opciones.reduce((mejor, o) =>
-        Math.abs(o - s.sessionLength) < Math.abs(mejor - s.sessionLength) ? o : mejor));
+      // Un valor guardado que ya no coincide con ninguna opción (restos de una
+      // versión vieja) se va al valor por defecto, NUNCA a la opción más chica
+      // disponible — aterrizar silenciosamente en "5" fue justo el bug reportado.
+      s.sessionLength = 10;
+      sesionSel.value = "10";
     }
     $("set-goal").value = s.dailyGoal;
     $("set-newwords").value = s.newWordsPerDay;
+    $("report-count").textContent = state.bugReports.length;
     $("set-rate").value = s.rate;
     $("set-sounds").checked = s.sounds;
     $("set-livetyping").checked = s.liveTyping;
@@ -1894,6 +2018,19 @@
     }
     save();
     renderFavButton();
+  });
+
+  $("btn-report").addEventListener("click", openReportModal);
+  $("btn-report-send").addEventListener("click", sendReport);
+  $("btn-report-cancel").addEventListener("click", () => $("report-modal").close());
+  $("btn-report-export").addEventListener("click", exportReports);
+  $("btn-report-clear").addEventListener("click", () => {
+    if (!state.bugReports.length) return;
+    if (!confirm(`¿Borrar los ${state.bugReports.length} reportes guardados?`)) return;
+    state.bugReports = [];
+    save();
+    $("report-count").textContent = "0";
+    showToast("Reportes borrados");
   });
 
   $("btn-next").addEventListener("click", nextQuestion);

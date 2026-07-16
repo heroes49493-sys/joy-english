@@ -1245,3 +1245,37 @@ body {
 }
 .tl-ok { color: var(--green); }
 .tl-bad { color: var(--red); text-decoration: underline; }
+
+/* Toast largo (mensajes informativos que necesitan más tiempo de lectura) */
+@keyframes toastInLong {
+  0% { opacity: 0; transform: translate(-50%, -14px) scale(.9); }
+  6% { opacity: 1; transform: translate(-50%, 0) scale(1.02); }
+  10% { transform: translate(-50%, 0) scale(1); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+.toast.toast-long {
+  animation: toastInLong 6s ease forwards;
+  max-width: min(90vw, 420px);
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Ítem de tienda deshabilitado (visible, no comprable) */
+.shop-item-disabled { opacity: .55; }
+.shop-item-disabled .shop-item-desc { font-style: italic; }
+
+/* 🚩 Reportes de errores */
+#report-modal textarea {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: .9rem;
+  resize: vertical;
+}
+#report-reasons { margin-bottom: 10px; }

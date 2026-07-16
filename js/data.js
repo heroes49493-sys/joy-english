@@ -4237,5 +4237,263 @@ const COLLECTIONS = [
         pos: "v"
       }
     ]
+  },
+  {
+    id: "class233",
+    name: "Clase 23.3 · Lista 17",
+    desc: "Vocabulario de tu clase: cine, comida y amor (25 palabras)",
+    icon: "🎓",
+    sentences: [
+      {
+        t: "I haven't slept well {{lately}}.",
+        es: "No he dormido bien últimamente.",
+        pos: "adv"
+      },
+      {
+        t: "{{Lately}}, she's been working from home.",
+        es: "Últimamente, ella ha estado trabajando desde casa.",
+        pos: "adv"
+      },
+      {
+        t: "They {{recently}} moved to a new apartment.",
+        es: "Ellos se mudaron recientemente a un apartamento nuevo.",
+        pos: "adv"
+      },
+      {
+        t: "I {{recently}} started learning English.",
+        es: "Recientemente empecé a aprender inglés.",
+        pos: "adv"
+      },
+      {
+        t: "Is there a pharmacy {{nearby}}?",
+        es: "¿Hay una farmacia cerca?",
+        pos: "adv"
+      },
+      {
+        t: "They live in a {{nearby}} town.",
+        es: "Viven en un pueblo cercano.",
+        pos: "adj"
+      },
+      {
+        t: "I will remember this day {{forever}}.",
+        es: "Recordaré este día para siempre.",
+        pos: "adv"
+      },
+      {
+        t: "Nothing lasts {{forever}}.",
+        es: "Nada dura para siempre.",
+        pos: "adv"
+      },
+      {
+        t: "The {{couple}} danced all night.",
+        es: "La pareja bailó toda la noche.",
+        pos: "n"
+      },
+      {
+        t: "A young {{couple}} bought the house next door.",
+        es: "Una pareja joven compró la casa de al lado.",
+        pos: "n"
+      },
+      {
+        t: "He planned a {{romantic}} dinner for two.",
+        es: "Él planeó una cena romántica para dos.",
+        pos: "adj"
+      },
+      {
+        t: "Paris is a very {{romantic}} city.",
+        es: "París es una ciudad muy romántica.",
+        pos: "adj"
+      },
+      {
+        t: "It's easy to {{fall}} in love in the spring.",
+        es: "Es fácil enamorarse en primavera.",
+        pos: "v"
+      },
+      {
+        t: "He fell in {{love}} with her smile.",
+        es: "Él se enamoró de su sonrisa.",
+        pos: "n"
+      },
+      {
+        t: "We watched a {{comedy}} last night.",
+        es: "Vimos una comedia anoche.",
+        pos: "n"
+      },
+      {
+        t: "This {{comedy}} made everyone laugh.",
+        es: "Esta comedia hizo reír a todos.",
+        pos: "n"
+      },
+      {
+        t: "The {{comedian}} told very funny jokes.",
+        es: "El cómico contó chistes muy graciosos.",
+        pos: "n"
+      },
+      {
+        t: "She wants to be a {{comedian}} someday.",
+        es: "Ella quiere ser cómica algún día.",
+        pos: "n"
+      },
+      {
+        t: "The first {{scene}} of the movie is amazing.",
+        es: "La primera escena de la película es increíble.",
+        pos: "n"
+      },
+      {
+        t: "I cried during the last {{scene}}.",
+        es: "Lloré durante la última escena.",
+        pos: "n"
+      },
+      {
+        t: "The {{protagonist}} of the story is a young doctor.",
+        es: "El protagonista de la historia es un médico joven.",
+        pos: "n"
+      },
+      {
+        t: "She plays the {{lead}} in the new series.",
+        es: "Ella interpreta a la protagonista en la nueva serie.",
+        pos: "n"
+      },
+      {
+        t: "I will {{attempt}} to fix the car myself.",
+        es: "Intentaré arreglar el auto yo mismo.",
+        pos: "v"
+      },
+      {
+        t: "Don't {{attempt}} to do everything alone.",
+        es: "No intentes hacerlo todo solo.",
+        pos: "v"
+      },
+      {
+        t: "These keys {{belong}} to my father.",
+        es: "Estas llaves pertenecen a mi padre.",
+        pos: "v"
+      },
+      {
+        t: "Do you {{belong}} to any club?",
+        es: "¿Perteneces a algún club?",
+        pos: "v"
+      },
+      {
+        t: "Please take all your {{belongings}} with you.",
+        es: "Por favor, lleva todas tus pertenencias contigo.",
+        pos: "n"
+      },
+      {
+        t: "She packed her {{belongings}} in one suitcase.",
+        es: "Ella empacó sus pertenencias en una sola maleta.",
+        pos: "n"
+      },
+      {
+        t: "Casablanca is a {{classic}} movie.",
+        es: "Casablanca es una película clásica.",
+        pos: "adj"
+      },
+      {
+        t: "That song is a {{classic}} from the eighties.",
+        es: "Esa canción es un clásico de los ochenta.",
+        pos: "n"
+      },
+      {
+        t: "We always buy {{popcorn}} at the movies.",
+        es: "Siempre compramos palomitas en el cine.",
+        pos: "n"
+      },
+      {
+        t: "The {{popcorn}} was salty and delicious.",
+        es: "Las palomitas estaban saladas y deliciosas.",
+        pos: "n"
+      },
+      {
+        t: "This cake contains {{nuts}}.",
+        es: "Este pastel contiene nueces.",
+        pos: "n"
+      },
+      {
+        t: "He eats {{nuts}} as a healthy snack.",
+        es: "Él come nueces como merienda saludable.",
+        pos: "n"
+      },
+      {
+        t: "I ordered a pizza with {{olives}}.",
+        es: "Pedí una pizza con aceitunas.",
+        pos: "n"
+      },
+      {
+        t: "Green {{olives}} taste great with cheese.",
+        es: "Las aceitunas verdes saben muy bien con queso.",
+        pos: "n"
+      },
+      {
+        t: "The monkey ate a {{peanut}}.",
+        es: "El mono se comió un cacahuete.",
+        pos: "n"
+      },
+      {
+        t: "Is there {{peanut}} in this sauce?",
+        es: "¿Esta salsa lleva cacahuete?",
+        pos: "n"
+      },
+      {
+        t: "She spread peanut {{butter}} on her toast.",
+        es: "Ella untó crema de cacahuete en su tostada.",
+        pos: "n"
+      },
+      {
+        t: "I love peanut {{butter}} and jelly sandwiches.",
+        es: "Me encantan los sándwiches de crema de cacahuete y mermelada.",
+        pos: "n"
+      },
+      {
+        t: "He has a serious {{allergy}} to nuts.",
+        es: "Él tiene una alergia grave a las nueces.",
+        pos: "n"
+      },
+      {
+        t: "Spring gives me a terrible {{allergy}}.",
+        es: "La primavera me da una alergia terrible.",
+        pos: "n"
+      },
+      {
+        t: "I'm {{allergic}} to peanuts.",
+        es: "Soy alérgico a los cacahuetes.",
+        pos: "adj"
+      },
+      {
+        t: "Are you {{allergic}} to any medicine?",
+        es: "¿Eres alérgico a algún medicamento?",
+        pos: "adj"
+      },
+      {
+        t: "Put the steaks on the {{grill}}.",
+        es: "Pon los filetes en la parrilla.",
+        pos: "n"
+      },
+      {
+        t: "The {{grill}} is still hot, be careful.",
+        es: "La parrilla todavía está caliente, ten cuidado.",
+        pos: "n"
+      },
+      {
+        t: "We {{grill}} chicken every Sunday.",
+        es: "Hacemos pollo a la parrilla todos los domingos.",
+        pos: "v"
+      },
+      {
+        t: "Dad loves to {{grill}} in the backyard.",
+        es: "A papá le encanta hacer parrilladas en el patio.",
+        pos: "v"
+      },
+      {
+        t: "We eat {{turkey}} on Thanksgiving.",
+        es: "Comemos pavo en Acción de Gracias.",
+        pos: "n"
+      },
+      {
+        t: "The {{turkey}} needs two more hours in the oven.",
+        es: "El pavo necesita dos horas más en el horno.",
+        pos: "n"
+      }
+    ]
   }
 ];
