@@ -2,14 +2,16 @@
 // Estrategia "red primero, caché de respaldo":
 //  - Con el servidor encendido, SIEMPRE baja la última versión (actualizas sin reinstalar).
 //  - Sin servidor (offline), la app sigue funcionando desde la caché.
-const CACHE = "joy-english-v23";
+const CACHE = "joy-english-v33";
 
+// ⚠️ Mantener las ?v= de esta lista IGUALES a las de index.html en cada versión
+// (quedó olvidada en v23 durante varias versiones y la precarga guardaba URLs viejas).
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/styles.css?v=23",
-  "./js/data.js?v=23",
-  "./js/app.js?v=23",
+  "./css/styles.css?v=31",
+  "./js/data.js?v=29",
+  "./js/app.js?v=33",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -34,8 +36,16 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET" || !req.url.startsWith(self.location.origin)) return;
 
+  // "no-cache": revalida SIEMPRE contra el servidor, para que el caché HTTP del
+  // navegador no pueda servir un index.html viejo (los .js/.css llevan ?v=N, pero
+  // index.html no). Con el server apagado, el catch de abajo sirve desde la caché SW.
+  // Nota: un Request en modo "navigate" no acepta init → se usa la URL en ese caso.
+  const fresh = req.mode === "navigate"
+    ? fetch(req.url, { cache: "no-cache" })
+    : fetch(req, { cache: "no-cache" });
+
   e.respondWith(
-    fetch(req)
+    fresh
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((cache) => cache.put(req, copy));

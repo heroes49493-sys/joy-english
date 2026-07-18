@@ -101,7 +101,8 @@
     sounds: true,
     liveTyping: true,       // letras verde/rojo mientras escribes
     autoplay: true,
-    autoAdvance: true
+    autoAdvance: true,
+    chartView: "days"       // vista de la gráfica de actividad: days | weeks | months
   });
 
   const defaultState = () => ({
@@ -123,7 +124,8 @@
     records: { bestTimed: 0, bestCombo: 0, bestDays: 0, talks: 0 },
     gems: 0,                  // moneda de la tienda (independiente del XP, no se gasta el XP)
     boosts: { doubleXpAnswers: 0, skipCapDate: null }, // efectos activos comprados en la tienda
-    bugReports: []            // 🚩 errores reportados en frases, para exportar y revisar
+    bugReports: [],           // 🚩 errores reportados en frases, para exportar y revisar
+    deckFeedback: []          // 💬 sugerencias de organización de mazos, para exportar y revisar
   });
 
   let state = load();
@@ -156,6 +158,7 @@
     if (!Array.isArray(s.recent)) s.recent = [];
     if (!Array.isArray(s.talkSessions)) s.talkSessions = [];
     if (!Array.isArray(s.errorVault)) s.errorVault = [];
+    if (!Array.isArray(s.deckFeedback)) s.deckFeedback = [];
     // La bienvenida es solo para cuentas nuevas: si ya hay progreso, no molestar
     if (raw.welcomed === undefined && (raw.points || 0) > 0) s.welcomed = true;
     if (!Array.isArray(s.pinnedCols)) s.pinnedCols = ["ft1"];
@@ -264,24 +267,6 @@
       .replace(/[^a-z0-9'\s]/g, " ")
       .split(/\s+/)
       .filter(Boolean);
-  }
-
-  const POS_NAMES = {
-    v: "un verbo", n: "un sustantivo", adj: "un adjetivo", adv: "un adverbio",
-    prep: "una preposición", conj: "una conjunción", pron: "un pronombre", x: "una palabra"
-  };
-
-  // Busca otra frase del banco que use la misma palabra oculta
-  function findExample(word, excludeT) {
-    for (const col of allCollections()) {
-      for (const s of col.sentences) {
-        const p = parseSentence(s);
-        if (p.answer.toLowerCase() === word.toLowerCase() && s.t !== excludeT) {
-          return { s, p };
-        }
-      }
-    }
-    return null;
   }
 
   // Número que cuenta hacia arriba (dopamina en los resultados)
@@ -578,36 +563,119 @@
     if (state.streak.count > state.records.bestDays) state.records.bestDays = state.streak.count;
   }
 
-  // ---------- Gráfica (oraciones por día) ----------
+  // ---------- ⏱ Formato de tiempo de práctica ----------
+  function fmtPractice(secs) {
+    if (!secs) return "0 min";
+    if (secs < 60) return "<1 min";
+    const mins = Math.floor(secs / 60);
+    if (mins < 60) return `${mins} min`;
+    const h = Math.floor(mins / 60);
+    return `${h} h ${String(mins % 60).padStart(2, "0")} min`;
+  }
+
+  function totalPracticeSeconds() {
+    let total = 0;
+    Object.values(state.history).forEach((h) => { total += h.seconds || 0; });
+    return total;
+  }
+
+  // ---------- Gráfica de actividad (líneas, con vista por días/semanas/meses) ----------
   const WEEKDAYS = ["D", "L", "M", "X", "J", "V", "S"];
+  const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+  // Serie de puntos {label, value, practiced} según la vista elegida
+  function chartSeries(view) {
+    const pts = [];
+    if (view === "days") {
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(Date.now() - i * DAY);
+        const h = state.history[dateKey(d)];
+        pts.push({
+          label: `${WEEKDAYS[d.getDay()]}${d.getDate()}`,
+          value: h?.played || 0,
+          practiced: (h?.played || 0) > 0 ? 1 : 0
+        });
+      }
+    } else if (view === "weeks") {
+      // Últimas 12 semanas (lunes a domingo)
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+      for (let w = 11; w >= 0; w--) {
+        let sum = 0, days = 0;
+        const start = new Date(monday.getTime() - w * 7 * DAY);
+        for (let i = 0; i < 7; i++) {
+          const h = state.history[dateKey(new Date(start.getTime() + i * DAY))];
+          if (h?.played) { sum += h.played; days++; }
+        }
+        pts.push({ label: `${start.getDate()}/${start.getMonth() + 1}`, value: sum, practiced: days });
+      }
+    } else {
+      // Últimos 12 meses
+      const now = new Date();
+      for (let m = 11; m >= 0; m--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+        const prefix = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        let sum = 0, days = 0;
+        Object.entries(state.history).forEach(([k, h]) => {
+          if (k.startsWith(prefix) && h.played) { sum += h.played; days++; }
+        });
+        pts.push({ label: MONTHS_ES[d.getMonth()], value: sum, practiced: days });
+      }
+    }
+    return pts;
+  }
 
   function renderChart(el) {
-    el.innerHTML = "";
-    const days = [];
-    for (let i = 13; i >= 0; i--) {
-      const d = new Date(Date.now() - i * DAY);
-      const key = dateKey(d);
-      days.push({ label: `${WEEKDAYS[d.getDay()]}<br>${d.getDate()}`, data: state.history[key] });
+    const view = state.settings.chartView || "days";
+    const series = chartSeries(view);
+    const goal = view === "days" ? state.settings.dailyGoal : null;
+    const max = Math.max(goal || 0, ...series.map((p) => p.value), 1);
+
+    const W = 560, H = 170, PADL = 10, PADR = 10, PADT = 22, PADB = 26;
+    const iw = W - PADL - PADR, ih = H - PADT - PADB;
+    const x = (i) => PADL + (series.length === 1 ? iw / 2 : (i / (series.length - 1)) * iw);
+    const y = (v) => PADT + ih - (v / max) * ih;
+
+    const line = series.map((p, i) => `${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(" ");
+    const area = `${PADL},${PADT + ih} ${line} ${(PADL + iw).toFixed(1)},${PADT + ih}`;
+    const labelEvery = series.length > 8 ? 2 : 1;
+
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
+    if (goal) {
+      svg += `<line x1="${PADL}" y1="${y(goal).toFixed(1)}" x2="${PADL + iw}" y2="${y(goal).toFixed(1)}" class="chart-goalline"/>`;
     }
-    const goal = state.settings.dailyGoal;
-    const max = Math.max(goal, ...days.map((d) => d.data?.played || 0));
+    svg += `<polygon points="${area}" class="chart-area"/>`;
+    svg += `<polyline points="${line}" class="chart-line"/>`;
+    series.forEach((p, i) => {
+      svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="4" class="chart-dot ${goal && p.value >= goal ? "goal-met" : ""}"/>`;
+      if (p.value > 0) {
+        svg += `<text x="${x(i).toFixed(1)}" y="${(y(p.value) - 9).toFixed(1)}" class="chart-num">${p.value}</text>`;
+      }
+      if (i % labelEvery === 0) {
+        svg += `<text x="${x(i).toFixed(1)}" y="${H - 6}" class="chart-xlabel">${p.label}</text>`;
+      }
+    });
+    svg += "</svg>";
 
-    const line = document.createElement("div");
-    line.className = "chart-goal-line";
-    line.style.bottom = `${Math.round(30 + (goal / max) * 86)}px`;
-    line.title = `Meta: ${goal} oraciones`;
-    el.appendChild(line);
+    // Resumen de constancia: cuántos días practicaste en el periodo visible
+    const practicedDays = series.reduce((a, p) => a + p.practiced, 0);
+    const range = { days: "los últimos 14 días", weeks: "las últimas 12 semanas", months: "los últimos 12 meses" }[view];
+    const summary = `🔥 ${practicedDays} día${practicedDays === 1 ? "" : "s"} con práctica en ${range}`;
 
-    days.forEach((d) => {
-      const n = d.data?.played || 0;
-      const col = document.createElement("div");
-      col.className = "chart-col";
-      col.innerHTML = `
-        ${n ? `<div class="chart-value">${n}</div>` : ""}
-        <div class="chart-bar ${n >= goal ? "goal-met" : ""}"
-             style="height:${Math.round((n / max) * 100)}%"></div>
-        <div class="chart-label">${d.label}</div>`;
-      el.appendChild(col);
+    el.innerHTML = `
+      <div class="chart-toggle">
+        ${[["days", "Días"], ["weeks", "Semanas"], ["months", "Meses"]].map(([id, name]) =>
+          `<button type="button" class="word-chip ${view === id ? "selected" : ""}" data-chartview="${id}">${name}</button>`).join("")}
+      </div>
+      ${svg}
+      <div class="chart-summary">${summary}</div>`;
+
+    el.querySelectorAll("[data-chartview]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.settings.chartView = btn.dataset.chartview;
+        save();
+        renderChart(el);
+      });
     });
   }
 
@@ -615,9 +683,11 @@
   function collectionCard(col, stats, extraHtml = "") {
     const card = document.createElement("div");
     card.className = "collection-card";
+    const suggestBtn = col.id === "__fav__" ? "" :
+      `<button class="deck-edit-link" data-suggest="${col.id}" title="Sugerir un cambio de organización en este mazo">💬 Sugerir</button>`;
     card.innerHTML = `
       <div class="collection-top">
-        <div class="collection-icon">${col.icon}</div>
+        <div class="collection-icon">${escapeHtml(col.icon)}</div>
         <div>
           <div class="collection-name">${escapeHtml(col.name)}</div>
           <div class="collection-desc">${escapeHtml(col.desc || "")}</div>
@@ -632,6 +702,7 @@
         </div>
         <div>
           ${extraHtml}
+          ${suggestBtn}
           <button class="btn primary" data-play="${col.id}" ${col.sentences.length ? "" : "disabled"}>Jugar ▶</button>
         </div>
       </div>`;
@@ -678,6 +749,9 @@
         renderDecksScreen();
       });
     });
+    root.querySelectorAll("[data-suggest]").forEach((btn) => {
+      btn.addEventListener("click", () => openDeckSuggestModal(btn.dataset.suggest));
+    });
   }
 
   // Pinta una insignia: emoji por defecto + imagen opcional encima (icons/ranks/<id>.png).
@@ -719,6 +793,10 @@
     $("goal-count").textContent = `${daily.played} / ${goal} oraciones`;
     $("goal-fill").style.width = `${Math.min(100, Math.round((daily.played / goal) * 100))}%`;
     $("goal-fill").classList.toggle("done", daily.played >= goal);
+
+    // ⏱ Tiempo practicando (hoy + total histórico)
+    $("time-today").textContent = `${fmtPractice(daily.seconds || 0)} hoy`;
+    $("time-total").textContent = `Total: ${fmtPractice(totalPracticeSeconds())}`;
 
     renderChart($("home-chart"));
 
@@ -834,7 +912,7 @@
     queue: [], pos: 0, lastColId: null,
     points: 0, correct: 0, streak: 0, bestStreak: 0,
     answered: false, hintUsed: false, mustRetype: false, current: null,
-    advanceTimer: null, answers: [], goalHit: false, helpLevel: 0,
+    advanceTimer: null, answers: [], goalHit: false,
     wasTimed: false, timedEnd: null, timedInt: null,
     lastRoundOmittedFresh: 0 // cuántas frases frescas del mazo se quedaron fuera por el tope diario
   };
@@ -920,26 +998,8 @@
     beginRound(queue, colId);
   }
 
-  // ⚡ Contrarreloj: 60 segundos de opción múltiple con TODO el banco
-  const TIMED_MS = 60000;
-
-  function startTimedChallenge() {
-    state.mode = "vocab";
-    state.difficulty = "easy";
-    save();
-    const pool = [];
-    allCollections().forEach((col) =>
-      col.sentences.forEach((s, i) => pool.push({ colId: col.id, idx: i, s })));
-    if (!pool.length) return;
-    beginRound(shuffle(pool).slice(0, 60), null, true);
-    game.timedEnd = Date.now() + TIMED_MS;
-    game.timedInt = setInterval(() => {
-      const left = Math.max(0, game.timedEnd - Date.now());
-      $("round-count").textContent = `⚡ ${Math.ceil(left / 1000)}s`;
-      $("round-fill").style.width = `${(left / TIMED_MS) * 100}%`;
-      if (left <= 0) { clearInterval(game.timedInt); endRound(); }
-    }, 250);
-  }
+  // (El ⚡ Contrarreloj de 60s se quitó del inicio en v31 a pedido del usuario;
+  // game.wasTimed queda inerte por si algún día vuelve como reto.)
 
   function favKey() {
     return `${game.current.colId}:${game.current.idx}`;
@@ -977,7 +1037,6 @@
     game.answered = false;
     game.hintUsed = false;
     game.mustRetype = false;
-    game.helpLevel = 0;
 
     const mode = state.mode;
     const d = state.difficulty;
@@ -1035,6 +1094,11 @@
     $("input-area").classList.toggle("hidden", !(isWordInput() || (mode === "listening" && d === "hard")));
     $("speak-area").classList.toggle("hidden", mode !== "speaking");
 
+    // En Vocabulario no hay audio: ya tenés la traducción, y escuchar la respuesta
+    // sería practicar escucha, no vocabulario.
+    $("btn-tts").classList.toggle("hidden", mode === "vocab");
+    $("btn-tts-slow").classList.toggle("hidden", mode === "vocab");
+
     if (isChoiceQuestion()) {
       renderChoices(4);
       $("kbd-hint").textContent = "Teclas 1–4 para responder · Enter para continuar";
@@ -1067,10 +1131,18 @@
 
     animate($("sentence-card"), "slide-in");
 
-    // El audio se reproduce SOLO al aparecer la frase (pedido del usuario)
-    // En speaking difícil no: ahí el reto es producirla desde la traducción.
-    if (!(mode === "speaking" && d === "hard")) {
+    // El audio se reproduce al aparecer la frase (pedido del usuario) — EXCEPTO en
+    // Vocabulario (v30): ahí no hay pista de audio antes de responder, para no
+    // resolver por oído; el audio se escucha recién DESPUÉS de responder (ver
+    // resolveAnswer). En speaking difícil tampoco: ahí el reto es producirla desde
+    // la traducción.
+    if (mode !== "vocab" && !(mode === "speaking" && d === "hard")) {
       speak(game.current.parsed.full);
+    } else if (mode === "vocab") {
+      // Corta cualquier audio que venga arrastrado (p. ej. la lectura de la
+      // respuesta anterior si avanzaste rápido): la pregunta de vocabulario
+      // SIEMPRE empieza en silencio.
+      speechSynthesis.cancel?.();
     }
   }
 
@@ -1314,7 +1386,15 @@
     $("game-streak").textContent = `🔥 ${game.streak}`;
     renderStreakFx();
 
-    if (state.settings.autoplay) speak(full);
+    // En Vocabulario no hay botones de audio ANTES de responder (a propósito, para no
+    // resolver por oído), así que DESPUÉS de responder siempre se escucha la oración
+    // correcta — acierte o falle — sin depender del ajuste "Leer la frase al responder".
+    if (state.settings.autoplay || state.mode === "vocab") speak(full);
+    if (state.mode === "vocab") {
+      // …y ahora que ya respondiste, los botones 🔊/🐢 vuelven para reescucharla
+      $("btn-tts").classList.remove("hidden");
+      $("btn-tts-slow").classList.remove("hidden");
+    }
 
     if (!game.mustRetype) {
       $("btn-next").classList.remove("hidden");
@@ -1577,6 +1657,7 @@
     let totalMastered = 0;
     allCollections().forEach((c) => { totalMastered += collectionStats(c).mastered; });
     $("t-mastered").textContent = totalMastered.toLocaleString("es");
+    $("t-time").textContent = fmtPractice(totalPracticeSeconds());
 
     // 🏅 Escalera de rangos completa
     const current = rankInfo(state.points).rank;
@@ -1603,7 +1684,6 @@
     // 🏆 Récords
     $("r-days").textContent = state.records.bestDays;
     $("r-combo").textContent = state.records.bestCombo;
-    $("r-timed").textContent = state.records.bestTimed;
     $("r-talks").textContent = state.records.talks;
 
     const colWrap = $("collection-stats");
@@ -1614,7 +1694,7 @@
       div.className = "col-stat";
       div.innerHTML = `
         <div class="col-stat-top">
-          <span>${col.icon} ${escapeHtml(col.name)}</span>
+          <span>${escapeHtml(col.icon)} ${escapeHtml(col.name)}</span>
           <span>${st.mastered}/${col.sentences.length} aprendidas · ${st.pct}%</span>
         </div>
         <div class="progress-track"><div class="progress-fill" style="width:${st.pct}%"></div></div>`;
@@ -1944,6 +2024,66 @@
     URL.revokeObjectURL(a.href);
   }
 
+  // ---------- 💬 Sugerir un cambio de organización en un mazo ----------
+  // Mismo espíritu que 🚩 Reportar: no hay servidor, se guarda local y se exporta
+  // como texto para pegarlo en el chat con Claude (ej: "este mazo debería dividirse
+  // en X y Y", "esta frase no encaja en este mazo").
+  let suggestTarget = null; // { colId, name }
+
+  function openDeckSuggestModal(colId) {
+    const col = findCollection(colId);
+    if (!col) return;
+    suggestTarget = { colId, name: col.name };
+    $("suggest-deck-name").textContent = `${col.icon} ${col.name}`;
+    $("suggest-note").value = "";
+    $("btn-suggest-send").disabled = true;
+    $("suggest-modal").showModal();
+  }
+
+  function sendSuggestion() {
+    if (!suggestTarget) return;
+    const note = $("suggest-note").value.trim();
+    if (!note) return;
+    state.deckFeedback.push({
+      id: `sug-${Date.now()}`,
+      date: today(),
+      colId: suggestTarget.colId,
+      name: suggestTarget.name,
+      note
+    });
+    save();
+    showToast("💬 Sugerencia guardada — expórtala desde Ajustes cuando quieras");
+    $("suggest-modal").close();
+  }
+
+  function suggestionsToMarkdown() {
+    const lines = [
+      "# 💬 Sugerencias de organización de mazos — Joy English",
+      "",
+      `Exportado: ${today()} · ${state.deckFeedback.length} sugerencia(s)`,
+      "",
+      "Pégale este archivo a Claude en el chat para que las revise y aplique.",
+      ""
+    ];
+    state.deckFeedback.forEach((s, i) => {
+      lines.push(`## ${i + 1}. ${s.name} (${s.colId})`);
+      lines.push(s.note);
+      lines.push(`- Fecha: ${s.date}`);
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  function exportSuggestions() {
+    if (!state.deckFeedback.length) { showToast("No tienes sugerencias guardadas"); return; }
+    const blob = new Blob([suggestionsToMarkdown()], { type: "text/markdown;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `joy-english-sugerencias-${today()}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   function openSettings() {
     const s = state.settings;
     const sesionSel = $("set-session");
@@ -1958,11 +2098,8 @@
     $("set-goal").value = s.dailyGoal;
     $("set-newwords").value = s.newWordsPerDay;
     $("report-count").textContent = state.bugReports.length;
+    $("suggest-count").textContent = state.deckFeedback.length;
     $("set-rate").value = s.rate;
-    $("set-sounds").checked = s.sounds;
-    $("set-livetyping").checked = s.liveTyping;
-    $("set-autoplay").checked = s.autoplay;
-    $("set-autoadvance").checked = s.autoAdvance;
 
     refreshVoices();
     const sel = $("set-voice");
@@ -1985,10 +2122,6 @@
     s.newWordsPerDay = Math.max(5, Number($("set-newwords").value) || 20);
     s.rate = Number($("set-rate").value);
     s.voice = $("set-voice").value;
-    s.sounds = $("set-sounds").checked;
-    s.liveTyping = $("set-livetyping").checked;
-    s.autoplay = $("set-autoplay").checked;
-    s.autoAdvance = $("set-autoadvance").checked;
     save();
     renderHome();
   }
@@ -2024,6 +2157,20 @@
   $("btn-report-send").addEventListener("click", sendReport);
   $("btn-report-cancel").addEventListener("click", () => $("report-modal").close());
   $("btn-report-export").addEventListener("click", exportReports);
+  $("suggest-note").addEventListener("input", () => {
+    $("btn-suggest-send").disabled = !$("suggest-note").value.trim();
+  });
+  $("btn-suggest-send").addEventListener("click", sendSuggestion);
+  $("btn-suggest-cancel").addEventListener("click", () => $("suggest-modal").close());
+  $("btn-suggest-export").addEventListener("click", exportSuggestions);
+  $("btn-suggest-clear").addEventListener("click", () => {
+    if (!state.deckFeedback.length) return;
+    if (!confirm(`¿Borrar las ${state.deckFeedback.length} sugerencias guardadas?`)) return;
+    state.deckFeedback = [];
+    save();
+    $("suggest-count").textContent = "0";
+    showToast("Sugerencias borradas");
+  });
   $("btn-report-clear").addEventListener("click", () => {
     if (!state.bugReports.length) return;
     if (!confirm(`¿Borrar los ${state.bugReports.length} reportes guardados?`)) return;
@@ -2040,51 +2187,36 @@
   });
   $("btn-giveup").addEventListener("click", () => answerInput(true));
 
-  // 💡 Ayuda por niveles: pistas graduales sin regalar la respuesta.
-  // Tras responder, da una explicación gratis de la palabra.
-  function showHelp() {
+  // 📖 Explicación: la gramática completa de la frase (campo s.gram). Disponible
+  // antes o después de responder — pero ANTES de responder la palabra oculta se
+  // tapa también DENTRO del texto (las explicaciones la nombran, ej: "'told' es
+  // el pasado de to tell"); sin esto el botón regalaba la respuesta y los puntos.
+  function showGrammarExplanation() {
     if (!game.current) return;
     const panel = $("help-panel");
-    const { answer, full } = game.current.parsed;
-    const es = game.current.s.es;
-    const posName = POS_NAMES[game.current.s.pos] || POS_NAMES.x;
+    const { gram, es } = game.current.s;
+    const { answer } = game.current.parsed;
 
-    if (game.answered) {
-      const ex = findExample(answer, game.current.s.t);
-      panel.innerHTML =
-        `📖 «<b>${escapeHtml(answer)}</b>» es ${posName}. Significado en contexto: <i>${escapeHtml(es)}</i>` +
-        (ex ? `<br>Otro ejemplo: “${escapeHtml(ex.p.full)}” — <i>${escapeHtml(ex.s.es)}</i>` : "");
-      panel.classList.remove("hidden");
-      return;
-    }
-
-    game.hintUsed = true; // pedir ayuda reduce los puntos a la mitad (una sola vez)
-    game.helpLevel = Math.min(3, game.helpLevel + 1);
-
-    const fullTask = isFullSentence() ||
-      (state.mode === "speaking" && state.difficulty !== "easy");
-    const hints = [];
-    if (fullTask) {
-      hints.push(`La oración tiene <b>${normalizeWords(full).length}</b> palabras y significa: <i>${escapeHtml(es)}</i>`);
-      hints.push(`Empieza así: “<b>${escapeHtml(full.split(" ").slice(0, 3).join(" "))}…</b>”`);
-      hints.push("🐢 Escúchala lenta una vez más.");
-      if (game.helpLevel === 3) speak(full, 0.6);
+    if (gram) {
+      let text = gram, masked = false;
+      if (!game.answered) {
+        const re = new RegExp(answer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+        masked = re.test(gram);
+        text = gram.replace(re, "____");
+      }
+      panel.innerHTML = `📖 <b>Explicación</b><br>${escapeHtml(text)}` +
+        (masked ? `<br><small>La palabra oculta aparece como ____ hasta que respondas.</small>` : "");
     } else {
-      hints.push(`La palabra oculta es <b>${posName}</b> y la oración significa: <i>${escapeHtml(es)}</i>`);
-      hints.push(`Empieza con “<b>${escapeHtml(answer[0])}</b>” y tiene <b>${answer.length}</b> letras.`);
-      const ex = findExample(answer, game.current.s.t);
-      hints.push(ex
-        ? `Otra frase con la misma palabra: “${escapeHtml(ex.p.before)}____${escapeHtml(ex.p.after)}” — <i>${escapeHtml(ex.s.es)}</i>`
-        : `Piensa en cómo lo dirías tú: <i>${escapeHtml(es)}</i>`);
+      // Mazos propios sin explicación: no revelar la traducción en los modos donde
+      // todavía está escondida (listening) — ahí sería una pista gratis.
+      const translationShown = game.answered || $("translation").textContent.trim() !== "";
+      panel.innerHTML = `📖 Esta frase todavía no tiene explicación de gramática guardada.` +
+        (translationShown ? ` Significado: <i>${escapeHtml(es)}</i>` : "");
     }
-
-    panel.innerHTML =
-      `💡 <b>Ayuda ${game.helpLevel}/3</b> <small>(puntos a la mitad)</small><br>` +
-      hints.slice(0, game.helpLevel).map((x) => `• ${x}`).join("<br>");
     panel.classList.remove("hidden");
   }
 
-  $("btn-help").addEventListener("click", showHelp);
+  $("btn-explain").addEventListener("click", showGrammarExplanation);
 
   function updateLiveTyping() {
     if (!game.current) return;
@@ -2148,7 +2280,6 @@
   });
 
   $("btn-again").addEventListener("click", () => {
-    if (game.wasTimed) { startTimedChallenge(); return; }
     if (game.lastColId == null) { renderHome(); showScreen("home"); return; }
     openPlayModal(game.lastColId);
   });
@@ -2178,7 +2309,7 @@
     applySettings();
     $("settings-modal").close();
   });
-  ["set-session", "set-goal", "set-newwords", "set-voice", "set-rate", "set-sounds", "set-livetyping", "set-autoplay", "set-autoadvance"]
+  ["set-session", "set-goal", "set-newwords", "set-voice", "set-rate"]
     .forEach((id) => $(id).addEventListener("change", applySettings));
   $("settings-modal").addEventListener("close", applySettings);
 
@@ -2323,8 +2454,54 @@
 
   const talk = {
     active: false, topic: null, startTs: 0, timerInt: null,
-    finals: [], interim: "", rec: null, mediaRec: null, chunks: [], url: null
+    finals: [], interim: "", rec: null, mediaRec: null, chunks: [], url: null,
+    pendingSessionId: null
   };
+
+  // ---------- 🎧 Guardado de audios del Baúl (IndexedDB, sin backend) ----------
+  // localStorage no alcanza para audio; IndexedDB guarda los Blob grabados
+  // localmente en este navegador, indexados por el id de cada charla.
+  const AUDIO_DB = "joy-english-audio";
+  const AUDIO_STORE = "clips";
+
+  function openAudioDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(AUDIO_DB, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(AUDIO_STORE);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function saveTalkAudio(id, blob) {
+    try {
+      const db = await openAudioDB();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(AUDIO_STORE, "readwrite");
+        tx.objectStore(AUDIO_STORE).put(blob, id);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) { /* IndexedDB no disponible: la charla se guarda igual, solo sin audio */ }
+  }
+
+  async function loadTalkAudio(id) {
+    try {
+      const db = await openAudioDB();
+      return await new Promise((resolve, reject) => {
+        const req = db.transaction(AUDIO_STORE, "readonly").objectStore(AUDIO_STORE).get(id);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) { return null; }
+  }
+
+  async function deleteTalkAudio(id) {
+    try {
+      const db = await openAudioDB();
+      db.transaction(AUDIO_STORE, "readwrite").objectStore(AUDIO_STORE).delete(id);
+    } catch (e) { /* nada que borrar */ }
+  }
 
   function renderTopics() {
     const wrap = $("topic-chips");
@@ -2357,6 +2534,7 @@
     talk.interim = "";
     talk.startTs = Date.now();
     talk.chunks = [];
+    talk.pendingSessionId = null;
     talk.learned = learnedWords(); // para el contador en vivo de palabras aplicadas
     if (talk.url) { URL.revokeObjectURL(talk.url); talk.url = null; }
     $("talk-audio").classList.add("hidden");
@@ -2384,12 +2562,18 @@
       talk.mediaRec.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
         if (talk.chunks.length) {
-          talk.url = URL.createObjectURL(
-            new Blob(talk.chunks, { type: talk.mediaRec.mimeType || "audio/webm" }));
+          const blob = new Blob(talk.chunks, { type: talk.mediaRec.mimeType || "audio/webm" });
+          talk.url = URL.createObjectURL(blob);
           // Reproductor completo: pausa, adelantar, volumen y silencio
           const player = $("talk-audio");
           player.src = talk.url;
           player.classList.remove("hidden");
+          // El blob recién queda listo acá (async), después de que analyzeAndShow ya
+          // creó la entrada en talkSessions — se guarda con el mismo id para poder
+          // mostrarlo luego en "Charlas anteriores".
+          if (talk.pendingSessionId) {
+            saveTalkAudio(talk.pendingSessionId, blob).then(renderTalkHistory);
+          }
         }
       };
       talk.mediaRec.start();
@@ -2452,7 +2636,8 @@
       $("talk-live").innerHTML = "No escuché nada 😅 — inténtalo de nuevo o usa el modo prueba.";
       return;
     }
-    analyzeAndShow(transcript, seconds, false);
+    talk.pendingSessionId = `talk-${Date.now()}`;
+    analyzeAndShow(transcript, seconds, false, talk.pendingSessionId);
   }
 
   function analyzeTalk(text, seconds) {
@@ -2473,8 +2658,11 @@
     };
   }
 
-  function analyzeAndShow(transcript, seconds, isDemo) {
+  function analyzeAndShow(transcript, seconds, isDemo, sessionId) {
     const r = analyzeTalk(transcript, seconds);
+    talk.lastTranscript = transcript;
+    $("ai-results").classList.add("hidden");
+    $("ai-error").classList.add("hidden");
 
     $("tm-seconds").textContent = seconds ? fmtTime(seconds) : "—";
     $("tm-words").textContent = r.words;
@@ -2526,10 +2714,13 @@
     $("talk-results").scrollIntoView({ behavior: "smooth", block: "start" });
 
     state.talkSessions.unshift({
+      id: sessionId || null,
       date: today(), topic: talk.topic || "(texto de prueba)",
       transcript, seconds: Math.round(seconds || 0),
       wpm: r.wpm, words: r.words, applied: r.applied, demo: isDemo
     });
+    // Al recortar a las últimas 15, borra también el audio guardado de las que quedan afuera
+    state.talkSessions.slice(15).forEach((old) => { if (old.id) deleteTalkAudio(old.id); });
     state.talkSessions = state.talkSessions.slice(0, 15);
     if (!isDemo) {
       state.records.talks++;
@@ -2538,16 +2729,81 @@
     save();
     renderTalkHistory();
     renderVaultErrors();
+    analizarConIA(); // se dispara solo, sin esperar el botón; si el server de IA está apagado, muestra el error ahí mismo y el botón queda para reintentar
+  }
+
+  // ---------- 🤖 Análisis profundo con IA (opcional, servidor local) ----------
+  const AI_SERVER = "http://localhost:4546";
+
+  async function analizarConIA() {
+    const btn = $("btn-ai-analyze");
+    btn.disabled = true;
+    btn.textContent = "🤖 Analizando…";
+    $("ai-error").classList.add("hidden");
+    $("ai-results").classList.add("hidden");
+    try {
+      const res = await fetch(`${AI_SERVER}/api/analyze-talk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcript: talk.lastTranscript,
+          topic: talk.topic || "",
+          learnedWords: [...learnedWords()],
+          knownErrors: state.errorVault.map((e) => ({ id: e.id, bad: e.bad, fix: e.fix }))
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error analizando el texto.");
+      renderAIResults(data.resultado);
+    } catch (e) {
+      $("ai-error").textContent =
+        `⚠️ ${e.message === "Failed to fetch"
+          ? "No pude conectar con el servidor de IA. ¿Está encendido? (npm start en joy-english/)"
+          : e.message}`;
+      $("ai-error").classList.remove("hidden");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🤖 Análisis profundo con IA";
+    }
+  }
+
+  function renderAIResults(r) {
+    $("ai-fluidez").textContent = `${r.fluidez}/10`;
+    $("ai-comentario").textContent = r.comentario;
+    $("ai-mejorada").textContent = r.version_mejorada;
+
+    const wrap = $("ai-nuevos");
+    wrap.innerHTML = "";
+    (r.errores_nuevos || []).forEach((err) => {
+      const d = document.createElement("div");
+      d.className = "issue-row";
+      d.innerHTML = `⚠️ Dijiste <b>“${escapeHtml(err.dijo)}”</b> → mejor: <span class="fix">“${escapeHtml(err.mejor)}”</span>` +
+        `<br><small style="color:var(--text-dim)">${escapeHtml(err.explicacion)}</small> · guardado en tu baúl`;
+      wrap.appendChild(d);
+      addVaultError(err.dijo, err.mejor, true, err.explicacion);
+    });
+    const repetidos = (r.errores_repetidos || [])
+      .map((id) => state.errorVault.find((x) => x.id === id)?.bad)
+      .filter(Boolean);
+    if (repetidos.length) {
+      const d = document.createElement("div");
+      d.className = "issue-row";
+      d.innerHTML = `🔁 Volviste a repetir: ${repetidos.map((b) => `<b>“${escapeHtml(b)}”</b>`).join(", ")}`;
+      wrap.appendChild(d);
+    }
+
+    $("ai-results").classList.remove("hidden");
+    renderVaultErrors();
   }
 
   // ---------- Baúl de errores ----------
-  function addVaultError(bad, fix, auto = false) {
+  function addVaultError(bad, fix, auto = false, explicacion = "") {
     const exists = state.errorVault.some(
       (e) => e.bad.toLowerCase() === bad.toLowerCase());
     if (exists) return;
     state.errorVault.unshift({
       id: `err-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      bad, fix, date: today(), auto, fixed: false
+      bad, fix, date: today(), auto, fixed: false, explicacion
     });
     save();
   }
@@ -2562,7 +2818,8 @@
       row.innerHTML = `
         <div class="txt"><span class="bad-part">“${escapeHtml(e.bad)}”</span> →
           <span class="fix-part">“${escapeHtml(e.fix)}”</span>
-          <small style="color:var(--text-dim)"> · ${e.date}${e.auto ? " · detectado" : ""}</small></div>
+          <small style="color:var(--text-dim)"> · ${e.date}${e.auto ? " · detectado" : ""}</small>
+          ${e.explicacion ? `<br><small style="color:var(--text-dim)">${escapeHtml(e.explicacion)}</small>` : ""}</div>
         <button data-say="${e.id}" title="Escuchar la forma correcta">🔊</button>
         <button data-fix="${e.id}" title="${e.fixed ? "Marcar pendiente" : "¡Vencido!"}">${e.fixed ? "↩" : "✓"}</button>
         <button data-delerr="${e.id}" title="Eliminar">🗑</button>`;
@@ -2600,8 +2857,14 @@
     });
   }
 
+  // Object URLs de los audios de "Charlas anteriores" — se revocan en cada
+  // render para no acumular memoria (renderTalkHistory se llama seguido).
+  let talkHistoryUrls = [];
+
   function renderTalkHistory() {
     const wrap = $("talk-history");
+    talkHistoryUrls.forEach((u) => URL.revokeObjectURL(u));
+    talkHistoryUrls = [];
     wrap.innerHTML = "";
     if (state.talkSessions.length === 0) {
       wrap.innerHTML = `<div class="talk-history-row">Aquí quedarán tus charlas: tema, duración y palabras aplicadas.</div>`;
@@ -2610,10 +2873,23 @@
     state.talkSessions.forEach((s) => {
       const row = document.createElement("div");
       row.className = "talk-history-row";
-      row.innerHTML = `<b>${escapeHtml(s.topic)}</b> · ${s.date} · ${s.words} palabras` +
+      row.innerHTML = `<div><b>${escapeHtml(s.topic)}</b> · ${s.date} · ${s.words} palabras` +
         (s.wpm ? ` · ${s.wpm} ppm` : "") +
-        ` · ✨ ${s.applied.length} aplicadas${s.demo ? " · ⌨️ texto" : ""}`;
+        ` · ✨ ${s.applied.length} aplicadas${s.demo ? " · ⌨️ texto" : ""}</div>` +
+        (s.id ? `<audio class="talk-history-audio" controls preload="none" data-audio="${s.id}"></audio>` : "");
       wrap.appendChild(row);
+    });
+    // Los audios se cargan aparte (async) desde IndexedDB; si una charla no tiene
+    // clip guardado (modo prueba, o el navegador no dejó grabar), se quita el player.
+    wrap.querySelectorAll("[data-audio]").forEach(async (audioEl) => {
+      const blob = await loadTalkAudio(audioEl.dataset.audio);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        talkHistoryUrls.push(url);
+        audioEl.src = url;
+      } else {
+        audioEl.remove();
+      }
     });
   }
 
@@ -2721,6 +2997,7 @@
     if (!talk.topic) setTopic("(texto de prueba)");
     analyzeAndShow(text, 0, true);
   });
+  $("btn-ai-analyze").addEventListener("click", analizarConIA);
   $("btn-vault-add").addEventListener("click", () => {
     const bad = $("vault-err-text").value.trim();
     const fix = $("vault-err-fix").value.trim();
@@ -2757,13 +3034,28 @@
     if (e.key === "Enter") checkDrill();
   });
 
-  $("btn-timed-challenge").addEventListener("click", startTimedChallenge);
 
   // Navegación inferior
   $("nav-home").addEventListener("click", () => { renderHome(); showScreen("home"); });
   $("nav-decks").addEventListener("click", renderDecksScreen);
   $("nav-vault").addEventListener("click", renderVault);
   $("nav-stats").addEventListener("click", renderStats);
+
+  // ---------- ⏱ Tiempo de práctica ----------
+  // Suma 1 segundo al día actual mientras la pestaña está visible Y estás
+  // practicando de verdad: dentro de una ronda o hablando en el Baúl.
+  // Se guarda cada 15s (y con cada save() normal del juego).
+  let practiceTicks = 0;
+  setInterval(() => {
+    if (document.hidden) return;
+    const playing = !$("screen-game").classList.contains("hidden");
+    if (!playing && !talk.active) return;
+    const t = today();
+    const h = state.history[t] || { points: 0, played: 0, correct: 0, newWords: 0 };
+    h.seconds = (h.seconds || 0) + 1;
+    state.history[t] = h;
+    if (++practiceTicks % 15 === 0) save();
+  }, 1000);
 
   // ---------- Inicio ----------
   renderHome();

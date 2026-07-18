@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=23">
+  <link rel="stylesheet" href="css/styles.css?v=31">
 </head>
 <body>
 
@@ -84,13 +84,20 @@
       <div class="goal-track"><div id="goal-fill" class="goal-fill"></div></div>
     </section>
 
-    <section class="chart-block">
-      <div class="chart-title">Tu actividad · últimos 14 días</div>
-      <div id="home-chart" class="history-chart"></div>
+    <section class="goal-bar" title="Cuenta el tiempo con una ronda o el Baúl abiertos">
+      <div class="goal-text">
+        <span>⏱ Tiempo practicando</span>
+        <span id="time-today">0 min hoy</span>
+      </div>
+      <div class="goal-text time-total-row">
+        <span></span>
+        <span id="time-total"></span>
+      </div>
     </section>
 
-    <section class="challenge-row">
-      <button id="btn-timed-challenge" class="btn primary challenge-btn">⚡ Contrarreloj 60s</button>
+    <section class="chart-block">
+      <div class="chart-title">Tu actividad</div>
+      <div id="home-chart" class="history-chart"></div>
     </section>
 
     <section id="recent-block" class="recent-block hidden">
@@ -142,7 +149,7 @@
         <div class="card-tools">
           <button id="btn-tts" class="tool-btn" title="Escuchar la oración completa">🔊 Escuchar</button>
           <button id="btn-tts-slow" class="tool-btn" title="Escuchar lento">🐢 Lento</button>
-          <button id="btn-help" class="tool-btn" title="Pista y explicación">💡 Ayuda</button>
+          <button id="btn-explain" class="tool-btn" title="Explicación gramatical de esta frase">📖 Explicación</button>
           <button id="btn-fav" class="tool-btn" title="Guardar en favoritas">☆</button>
           <button id="btn-report" class="tool-btn" title="Reportar un error en esta frase">🚩 Reportar</button>
           <span id="mastery-indicator" class="mastery"></span>
@@ -226,7 +233,7 @@
     </header>
 
     <section class="stats-block">
-      <h3>Últimos 14 días</h3>
+      <h3>Tu actividad</h3>
       <div id="stats-chart" class="history-chart"></div>
       <p id="stats-week" class="chart-title" style="margin-top:10px"></p>
     </section>
@@ -254,6 +261,10 @@
           <div class="stat-value" id="t-mastered">0</div>
           <div class="stat-label">Frases aprendidas</div>
         </div>
+        <div class="stat" title="Tiempo con una ronda o el Baúl abiertos">
+          <div class="stat-value" id="t-time">0 min</div>
+          <div class="stat-label">Tiempo practicando</div>
+        </div>
       </div>
     </section>
 
@@ -267,7 +278,6 @@
       <div class="stats-bar">
         <div class="stat"><div class="stat-value" id="r-days">0</div><div class="stat-label">Racha récord (días)</div></div>
         <div class="stat"><div class="stat-value" id="r-combo">0</div><div class="stat-label">Mejor combo</div></div>
-        <div class="stat"><div class="stat-value" id="r-timed">0</div><div class="stat-label">⚡ Contrarreloj</div></div>
         <div class="stat"><div class="stat-value" id="r-talks">0</div><div class="stat-label">Charlas libres</div></div>
       </div>
     </section>
@@ -347,6 +357,23 @@
       <div id="talk-applied" class="talk-applied"></div>
       <div id="talk-issues" class="talk-issues"></div>
       <p class="vault-note">🧪 Análisis local automático (patrones comunes).</p>
+
+      <div class="ai-analyze-row">
+        <button id="btn-ai-analyze" class="btn primary">🤖 Análisis profundo con IA</button>
+        <span id="ai-error" class="ai-error hidden"></span>
+      </div>
+      <div id="ai-results" class="ai-results hidden">
+        <div class="ai-fluidez-row">
+          <span class="chips-label">Fluidez:</span>
+          <span id="ai-fluidez" class="ai-fluidez">—/10</span>
+        </div>
+        <p id="ai-comentario" class="ai-comentario"></p>
+        <div id="ai-nuevos" class="talk-issues"></div>
+        <details class="deck-bulk-wrap">
+          <summary>✍️ Ver tu charla reescrita como nativo</summary>
+          <p id="ai-mejorada" class="ai-mejorada"></p>
+        </details>
+      </div>
 
     </section>
 
@@ -474,6 +501,21 @@
     </div>
   </dialog>
 
+  <!-- ============ 💬 SUGERIR CAMBIO DE ORGANIZACIÓN EN UN MAZO ============ -->
+  <dialog id="suggest-modal" class="settings-modal">
+    <h2>💬 Sugerir un cambio</h2>
+    <p class="chips-label" id="suggest-deck-name"></p>
+    <label class="setting-row" style="flex-direction:column; align-items:stretch; gap:6px;">
+      <span>¿Qué cambiarías de este mazo?</span>
+      <textarea id="suggest-note" rows="4" spellcheck="false"
+        placeholder="Ej: esta frase no encaja acá, muévela a Fast Track 2 / este mazo se podría dividir en dos…"></textarea>
+    </label>
+    <div class="settings-actions">
+      <button id="btn-suggest-send" class="btn primary" disabled>Enviar sugerencia</button>
+      <button id="btn-suggest-cancel" class="btn secondary">Cancelar</button>
+    </div>
+  </dialog>
+
   <!-- ============ ELEGIR MODO Y DIFICULTAD (antes de cada ronda) ============ -->
   <dialog id="play-modal" class="settings-modal diff-modal">
     <h2 id="play-title">¿Cómo quieres practicar?</h2>
@@ -520,26 +562,6 @@
       <input id="set-rate" type="range" min="0.5" max="1.2" step="0.05">
     </label>
 
-    <label class="setting-row check">
-      <input id="set-sounds" type="checkbox">
-      <span>Sonido al acertar</span>
-    </label>
-
-    <label class="setting-row check">
-      <input id="set-autoplay" type="checkbox">
-      <span>Leer la frase en voz alta al responder</span>
-    </label>
-
-    <label class="setting-row check">
-      <input id="set-livetyping" type="checkbox">
-      <span>Letras en verde/rojo mientras escribes</span>
-    </label>
-
-    <label class="setting-row check">
-      <input id="set-autoadvance" type="checkbox">
-      <span>Avanzar automáticamente al acertar</span>
-    </label>
-
     <div class="settings-actions">
       <button id="btn-export" class="btn secondary">⬇ Exportar progreso</button>
       <button id="btn-import" class="btn secondary">⬆ Importar</button>
@@ -558,6 +580,17 @@
       <button id="btn-report-clear" class="btn danger">🗑 Borrar reportes</button>
     </div>
 
+    <div class="setting-row" style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
+      <span>💬 Sugerencias de mazos</span>
+      <span id="suggest-count">0</span>
+    </div>
+    <p class="chips-label">Sugerencias de organización que dejaste desde 💬 Sugerir en
+      cada mazo. Expórtalas y pégalas en el chat con Claude para que las aplique.</p>
+    <div class="settings-actions">
+      <button id="btn-suggest-export" class="btn secondary">📤 Exportar sugerencias</button>
+      <button id="btn-suggest-clear" class="btn danger">🗑 Borrar sugerencias</button>
+    </div>
+
     <button id="btn-settings-close" class="btn primary">Cerrar</button>
   </dialog>
 
@@ -569,8 +602,8 @@
     <button id="nav-stats" data-nav>📊<small>Progreso</small></button>
   </nav>
 
-  <script src="js/data.js?v=23"></script>
-  <script src="js/app.js?v=23"></script>
+  <script src="js/data.js?v=29"></script>
+  <script src="js/app.js?v=33"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)
     // y baja la última versión cuando el servidor está encendido.
