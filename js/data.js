@@ -5728,5 +5728,193 @@ const COLLECTIONS = [
         gram: "'ran' es el pasado de 'to run'. Se usa igual que en español 'corrió' para hablar de una carrera puntual, no de un hábito."
       }
     ]
+  },
+  {
+    id: "class235",
+    name: "Clase 23.5 · Lista 18",
+    desc: "Estructuras de tu clase: poder en futuro, phrasal verbs, too much/many y más",
+    icon: "📝",
+    sentences: [
+      {
+        t: "I won't be {{able}} to come to class tomorrow.",
+        es: "No podré venir a clase mañana.",
+        pos: "adj",
+        gram: "'Can' no tiene futuro — para decir 'podré/no podré' se usa 'will/won't be able to'. 'Able' es la pieza clave: 'be able to' = poder."
+      },
+      {
+        t: "She will be {{able}} to help you next week.",
+        es: "Ella podrá ayudarte la próxima semana.",
+        pos: "adj",
+        gram: "'Will be able to' es la forma de futuro de 'can': ella podrá = she will be able to. Nunca se dice 'she will can'."
+      },
+      {
+        t: "Did you hear {{what}} she said?",
+        es: "¿Oíste lo que ella dijo?",
+        pos: "pron",
+        gram: "'What' también significa 'LO QUE' dentro de una oración: 'what she said' = lo que ella dijo. No se dice 'that what' ni 'the what'."
+      },
+      {
+        t: "I always eat {{what}} my mom cooks.",
+        es: "Siempre como lo que cocina mi mamá.",
+        pos: "pron",
+        gram: "'What' como 'lo que': 'eat what my mom cooks' = comer lo que cocina mi mamá. Une dos ideas sin necesitar 'the thing that'."
+      },
+      {
+        t: "This coffee is cold — give me {{another}} one.",
+        es: "Este café está frío — dame otro.",
+        pos: "pron",
+        gram: "'Another' = OTRO cualquiera, uno más (an + other, siempre con singular). Si pides EL otro específico, es 'the other'. La Lista 18 practica justo ese contraste."
+      },
+      {
+        t: "Where is the {{other}} sock?",
+        es: "¿Dónde está el otro calcetín?",
+        pos: "adj",
+        gram: "'The other' = EL otro, uno específico que ambos conocen. 'Another' sería uno más cualquiera. Compará: 'give me another pen' (otro) vs 'give me the other pen' (el otro)."
+      },
+      {
+        t: "We need to {{get}} on the next train.",
+        es: "Tenemos que subirnos al próximo tren.",
+        pos: "v",
+        gram: "Subirse a un bus/tren/avión es 'get on', y bajarse es 'get off'. Con phrasal verbs la partícula cambia todo el significado — no se traduce 'subir' con 'go up' aquí."
+      },
+      {
+        t: "She got {{off}} the bus at the wrong stop.",
+        es: "Ella se bajó del autobús en la parada equivocada.",
+        pos: "prep",
+        gram: "'Get off' = bajarse (de un transporte). Lo contrario de 'get on'. 'Get back off' sería VOLVER a bajarse — 'back' agrega el 'volver a'."
+      },
+      {
+        t: "It's cold outside — get {{back}} inside the house.",
+        es: "Hace frío afuera — vuelve a entrar a la casa.",
+        pos: "adv",
+        gram: "'Back' mete la idea de 'volver a': get back inside = volver a entrar, get back off = volverse a bajar. El inglés dice 'volver a' con partículas, no con otro verbo."
+      },
+      {
+        t: "There is too {{much}} sugar in this coffee.",
+        es: "Hay demasiada azúcar en este café.",
+        pos: "adj",
+        gram: "'Too much' va con INCONTABLES (sugar, water, time): too much sugar. Con contables en plural se usa 'too many'. 'Too' solo ya indica exceso, algo negativo."
+      },
+      {
+        t: "There were too {{many}} people at the concert.",
+        es: "Había demasiada gente en el concierto.",
+        pos: "adj",
+        gram: "'Too many' va con CONTABLES en plural: too many people, too many cars. Ojo: 'people' es plural en inglés, por eso lleva 'many' y no 'much'."
+      },
+      {
+        t: "This box is {{too}} heavy for me.",
+        es: "Esta caja es demasiado pesada para mí.",
+        pos: "adv",
+        gram: "'Too + adjetivo' = demasiado: too heavy, too late. Sin sustantivo no hace falta much/many. 'It's too much for me' = es demasiado para mí (con 'much' porque no hay adjetivo)."
+      },
+      {
+        t: "He ended up {{selling}} his car.",
+        es: "Él acabó vendiendo su coche.",
+        pos: "v",
+        gram: "'End up + -ing' = acabar haciendo algo: ended up selling = acabó vendiendo. Después de 'end up' el verbo va SIEMPRE en -ing, nunca 'ended up to sell'."
+      },
+      {
+        t: "We ended up {{watching}} movies all night.",
+        es: "Acabamos viendo películas toda la noche.",
+        pos: "v",
+        gram: "'End up + -ing' para el resultado final de algo que no planeabas: acabamos viendo películas. Igual que 'Luis ended up quitting college' de tu clase."
+      },
+      {
+        t: "You need to {{focus}} on your homework.",
+        es: "Necesitas concentrarte en tu tarea.",
+        pos: "v",
+        gram: "'Focus' va con 'ON', nunca con 'in': focus on something. El español 'concentrarse EN' empuja al error 'focus in' — memorizá la pareja focus + on."
+      },
+      {
+        t: "Don't worry, we can {{work}} it out together.",
+        es: "No te preocupes, podemos resolverlo juntos.",
+        pos: "v",
+        gram: "'Work out' = resolver (un problema): work out this problem, work it out. La partícula 'out' transforma 'work' (trabajar) en 'resolver' — otro phrasal clave de tu lista."
+      },
+      {
+        t: "If you {{keep}} practicing, you will speak English fluently.",
+        es: "Si sigues practicando, hablarás inglés con fluidez.",
+        pos: "v",
+        gram: "'Keep + -ing' = seguir haciendo algo: keep practicing = seguir practicando. Nunca 'keep to practice'. Igual que 'if you keep eating like that' de tu clase."
+      },
+      {
+        t: "My neighbor keeps {{making}} noise at night.",
+        es: "Mi vecino sigue haciendo ruido por la noche.",
+        pos: "v",
+        gram: "'Keep + -ing' también expresa algo que se repite y molesta: keeps making noise = no para de hacer ruido. El verbo después de keep siempre en -ing."
+      },
+      {
+        t: "{{Didn't}} you see my message yesterday?",
+        es: "¿No viste mi mensaje ayer?",
+        pos: "v",
+        gram: "Pregunta negativa en pasado: empieza con 'Didn't' y el verbo queda en forma base (see, no saw): Didn't you see...? Expresa sorpresa, como '¿no que...?'. Igual que 'Didn't you have a car?'."
+      },
+      {
+        t: "I {{was}} studying when you called me.",
+        es: "Estaba estudiando cuando me llamaste.",
+        pos: "v",
+        gram: "Pasado continuo: was/were + verbo en -ing, para una acción en progreso en el pasado: I was studying = estaba estudiando. 'I was reading all night' usa lo mismo."
+      },
+      {
+        t: "They {{were}} sleeping all afternoon.",
+        es: "Estuvieron durmiendo toda la tarde.",
+        pos: "v",
+        gram: "Pasado continuo con they/we/you usa 'were': they were sleeping. Para duraciones largas ('toda la tarde/noche') este tiempo es el natural en inglés."
+      },
+      {
+        t: "The two companies {{reached}} an agreement yesterday.",
+        es: "Las dos empresas alcanzaron un acuerdo ayer.",
+        pos: "v",
+        gram: "'Reach an agreement' = alcanzar/llegar a un acuerdo — colocación fija (no 'arrive to an agreement'). 'Reached' es pasado regular de 'to reach'."
+      },
+      {
+        t: "I thought there {{were}} more cookies in the box.",
+        es: "Creía que había más galletas en la caja.",
+        pos: "v",
+        gram: "'Había' con plural = 'there were': I thought there were... Para contar personas: 'there were nine of us' = éramos nueve. 'Creía que éramos nueve' NO usa 'we were nine'."
+      },
+      {
+        t: "How long does it {{take}} to get to your house?",
+        es: "¿Cuánto se tarda en llegar a tu casa?",
+        pos: "v",
+        gram: "Para 'tardar', el inglés usa 'take' con 'it': it takes ten minutes = se tarda diez minutos; how long is it going to take you = cuánto vas a tardar. La cosa 'toma' tiempo, no tú."
+      },
+      {
+        t: "It won't {{take}} me too long to finish.",
+        es: "No tardaré demasiado en terminar.",
+        pos: "v",
+        gram: "'No tardaré' = 'it won't take me long' — el sujeto es IT, no yo: el tiempo es lo que se toma. 'I won't take too long' también se oye, pero la fórmula con 'it' es la de tu lista."
+      },
+      {
+        t: "{{Let}} me know when you get home.",
+        es: "Avísame cuando llegues a casa.",
+        pos: "v",
+        gram: "'Let me know' = avísame (literalmente 'déjame saber'). Fórmula fija clave: let me know if..., let me know when... También 'let him know' (avísale a él)."
+      },
+      {
+        t: "The students took {{down}} everything the teacher said.",
+        es: "Los estudiantes tomaron nota de todo lo que dijo el profesor.",
+        pos: "adv",
+        gram: "'Take down' = anotar/tomar nota: did you take down what I said? = ¿tomaste nota de lo que dije? Sin 'down', 'take' es solo tomar/llevar."
+      },
+      {
+        t: "She told me {{to}} wait outside.",
+        es: "Ella me dijo que esperara afuera.",
+        pos: "prep",
+        gram: "Órdenes reportadas: tell someone TO + verbo: 'she told me to wait' = me dijo que esperara. El inglés no usa 'que + subjuntivo' — la estructura es tell + persona + to + verbo."
+      },
+      {
+        t: "The doctor told him to {{calm}} down.",
+        es: "El médico le dijo que se calmara.",
+        pos: "v",
+        gram: "'Calm down' = calmarse (phrasal). Con orden reportada: told him to calm down = le dijo que se calmara — la misma estructura tell + persona + to + verbo de tu lista."
+      },
+      {
+        t: "Why did you {{fight}} with your brother?",
+        es: "¿Por qué te peleaste con tu hermano?",
+        pos: "v",
+        gram: "'Fight' = pelearse (fight-fought-fought). En preguntas con 'did', el verbo vuelve a la forma base: Why did you fight? — nunca 'did you fought'."
+      }
+    ]
   }
 ];
