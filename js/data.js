@@ -5916,5 +5916,1081 @@ const COLLECTIONS = [
         gram: "'Fight' = pelearse (fight-fought-fought). En preguntas con 'did', el verbo vuelve a la forma base: Why did you fight? — nunca 'did you fought'."
       }
     ]
+  },
+  {
+    id: "beginner1",
+    name: "Nivel 1 · Principiantes (Clases 1.1–1.9)",
+    desc: "Tu curso base desde cero: verbo to be, this/that, y 75 palabras esenciales",
+    icon: "🔰",
+    sentences: [
+      {
+        t: "{{It's}} a pen.",
+        es: "Es un boli.",
+        pos: "x",
+        gram: "'It's' = it is. En español el sujeto se omite ('es un boli'), pero en inglés siempre hace falta 'it'. Se usa con 'a/an + sustantivo' para identificar algo."
+      },
+      {
+        t: "{{It's}} a chair.",
+        es: "Es una silla.",
+        pos: "x",
+        gram: "'It's' = it is, para identificar objetos. 'Chair' empieza con consonante, por eso lleva 'a' y no 'an'."
+      },
+      {
+        t: "It's {{not}} a pen.",
+        es: "No es un boli.",
+        pos: "x",
+        gram: "Para negar, 'not' va justo después del verbo 'is': it's + not + a/an + sustantivo. La contracción 'it's' no cambia."
+      },
+      {
+        t: "It's {{not}} a book.",
+        es: "No es un libro.",
+        pos: "x",
+        gram: "Misma estructura de negación: it's + not + a + sustantivo. 'Book' empieza con consonante → 'a book'."
+      },
+      {
+        t: "{{Is}} it a pen?",
+        es: "¿Es un boli?",
+        pos: "x",
+        gram: "Para preguntar, invertimos sujeto y verbo: 'Is' va PRIMERO. En español el orden es libre (¿es un boli? / ¿un boli es?), pero en inglés esta es la única forma posible."
+      },
+      {
+        t: "{{Is}} it a chair?",
+        es: "¿Es una silla?",
+        pos: "x",
+        gram: "Inversión verbo-sujeto para preguntar: Is + it + a/an + sustantivo? Solo se usa un signo de interrogación, al final."
+      },
+      {
+        t: "Yes, it {{is}}.",
+        es: "Sí, lo es.",
+        pos: "x",
+        gram: "Las respuestas cortas en inglés SIEMPRE llevan sujeto + verbo (no basta un 'sí' suelto como en español): 'Yes, it is.' — aquí no se contrae, porque 'is' es la última palabra."
+      },
+      {
+        t: "No, it's {{not}}.",
+        es: "No, no lo es.",
+        pos: "x",
+        gram: "Respuesta corta negativa: 'No, it's not.' (o también 'No, it isn't.'). Nunca se dice solo 'No' como respuesta completa en inglés formal."
+      },
+      {
+        t: "{{This}} is a pencil.",
+        es: "Esto es un lápiz.",
+        pos: "x",
+        gram: "'This' = esto. Se usa la PRIMERA vez que hablas de un objeto que tienes cerca o en la mano; después, sigues con 'it'."
+      },
+      {
+        t: "{{This}} is a bottle.",
+        es: "Esto es una botella.",
+        pos: "x",
+        gram: "'This' introduce un objeto nuevo al alcance de la mano. Si vuelves a mencionarlo, usa 'it', no repitas 'this' (no suena natural)."
+      },
+      {
+        t: "This is {{not}} a chair.",
+        es: "Esto no es una silla.",
+        pos: "x",
+        gram: "Negación con 'this': this is + not + a/an + sustantivo. Mismo patrón que con 'it's'."
+      },
+      {
+        t: "{{Is}} this a chair?",
+        es: "¿Es esto una silla?",
+        pos: "x",
+        gram: "Pregunta con 'this': Is + this + a/an + sustantivo? — inversión igual que con 'it'."
+      },
+      {
+        t: "Is this a pen {{or}} a book?",
+        es: "¿Es esto un boli o un libro?",
+        pos: "conj",
+        gram: "'Or' = o, para preguntas de opción entre dos cosas. Se responde simplemente con el tipo de frase que ya conoces: 'It's a pen.'"
+      },
+      {
+        t: "{{That's}} a car.",
+        es: "Aquello es un coche.",
+        pos: "x",
+        gram: "'That's' = that is = eso/aquello es. Se usa para objetos LEJOS de ti, que no puedes tocar — al contrario que 'this'."
+      },
+      {
+        t: "{{That's}} a chair.",
+        es: "Aquello es una silla.",
+        pos: "x",
+        gram: "'That's' para señalar algo lejano sin tocarlo. Cuidado con pronunciar bien la 'T' del 'that's', sobre todo antes de una 's'."
+      },
+      {
+        t: "That's {{not}} a truck.",
+        es: "Aquello no es un camión.",
+        pos: "x",
+        gram: "Negación con 'that's': that's + not + a/an + sustantivo. Mismo patrón que 'it's not' y 'this is not'."
+      },
+      {
+        t: "{{Is}} that a motorbike?",
+        es: "¿Es eso una moto?",
+        pos: "x",
+        gram: "Pregunta con 'that': Is + that + a/an + sustantivo? La diferencia entre 'this'/'that' es distancia: cerca vs. lejos, no es cuestión de gramática sino de a qué señalas."
+      },
+      {
+        t: "{{What's}} this?",
+        es: "¿Qué es esto?",
+        pos: "x",
+        gram: "'What's' = what is. Muy importante: la RESPUESTA a esta pregunta es siempre con 'it's', nunca repitiendo 'this' (sonaría redundante, como decir '¿qué es esto? esto es un boli' en vez de 'es un boli')."
+      },
+      {
+        t: "{{What's}} that?",
+        es: "¿Qué es eso?",
+        pos: "x",
+        gram: "'What's that?' se responde con 'It's a ...', igual que 'What's this?'. Nunca se responde repitiendo 'that'."
+      },
+      {
+        t: "{{Where}} is the notebook?",
+        es: "¿Dónde está el cuaderno?",
+        pos: "adv",
+        gram: "'Where' = dónde. Misma inversión que las demás preguntas: Where + is + sustantivo? Se responde diciendo dónde está: 'It's on/in ...'."
+      },
+      {
+        t: "{{Where}} is the chair?",
+        es: "¿Dónde está la silla?",
+        pos: "adv",
+        gram: "'Where is...?' pide ubicación. La única diferencia de sonido con 'What is...?' es el primer diptongo — hay que distinguirlos bien al hablar."
+      },
+      {
+        t: "It's {{on}} the table.",
+        es: "Está en la mesa.",
+        pos: "prep",
+        gram: "'On' = sobre/en, para SUPERFICIES (la mesa, el suelo, la calle). El español usa 'en' para todo, pero el inglés distingue 'on' de 'in' según el tipo de lugar."
+      },
+      {
+        t: "It's {{in}} Spain.",
+        es: "Está en España.",
+        pos: "prep",
+        gram: "'In' = en, para ESPACIOS CERRADOS o territorios (países, ciudades, habitaciones). Contraste con 'on' (superficies): 'in Spain' pero 'on the table'."
+      },
+      {
+        t: "{{He's}} a doctor.",
+        es: "Él es médico.",
+        pos: "x",
+        gram: "'He's' = he is. Mismo patrón que 'it's'/'that's', ahora con personas: he's/she's + a + profesión."
+      },
+      {
+        t: "{{She's}} a teacher.",
+        es: "Ella es profesora.",
+        pos: "x",
+        gram: "'She's' = she is. Con profesiones siempre se usa 'a/an': 'she's A teacher', nunca 'she's teacher' solo."
+      },
+      {
+        t: "{{Miguel}} is not here.",
+        es: "Miguel no está aquí.",
+        pos: "n",
+        gram: "Con nombres propios no se usa 'he's/she's' contraído en la negación: 'Miguel is not here' (o 'Miguel isn't here'), igual que con 'it' y 'this'."
+      },
+      {
+        t: "{{You're}} tired.",
+        es: "Estás cansado.",
+        pos: "x",
+        gram: "'You're' = you are. Con 'you/we/they' el verbo 'to be' es 'are', no 'is' — la única forma que cambia según quién habla."
+      },
+      {
+        t: "She's {{eating}}.",
+        es: "Ella está comiendo.",
+        pos: "v",
+        gram: "Verbo + '-ing' después de is/are = una acción pasando AHORA MISMO (presente continuo). Es la primera vez que ves este tiempo — lo practicarás mucho más adelante."
+      },
+      {
+        t: "He's not {{running}}.",
+        es: "Él no está corriendo.",
+        pos: "v",
+        gram: "Negación del presente continuo: is/are + not + verbo-ing. 'Running' dobla la 'n' porque 'run' es una sílaba corta que termina en consonante-vocal-consonante."
+      },
+      {
+        t: "{{She's}} in Barcelona.",
+        es: "Ella está en Barcelona.",
+        pos: "x",
+        gram: "'She's' + in + lugar = ella está en (un sitio). Mismo 'in' que usamos para países y ciudades."
+      },
+      {
+        t: "I {{need}} a pen to write.",
+        es: "Necesito un boli para escribir.",
+        pos: "v",
+        gram: "'need' = necesitar (verbo en forma base, se usa así con I/you/we/they). 'To write' = para escribir, expresa el propósito."
+      },
+      {
+        t: "This pen is {{blue}}.",
+        es: "Este boli es azul.",
+        pos: "adj",
+        gram: "'pen' = boli/bolígrafo. No confundir con 'pencil' (lápiz) — son objetos distintos aunque se parezcan en español."
+      },
+      {
+        t: "The {{pencil}} is on the table.",
+        es: "El lápiz está sobre la mesa.",
+        pos: "n",
+        gram: "'pencil' = lápiz. Se escribe con una sola 'l' al final — cuidado con la ortografía, es un error común."
+      },
+      {
+        t: "I have a yellow {{pencil}}.",
+        es: "Tengo un lápiz amarillo.",
+        pos: "n",
+        gram: "'pencil' = lápiz. El adjetivo de color va siempre ANTES del sustantivo: 'a yellow pencil'."
+      },
+      {
+        t: "Use a {{marker}} to write on the board.",
+        es: "Usa un rotulador para escribir en la pizarra.",
+        pos: "n",
+        gram: "'marker' = rotulador. En otros contextos también significa 'marcador' (de posición, de página)."
+      },
+      {
+        t: "This {{marker}} doesn't work.",
+        es: "Este rotulador no funciona.",
+        pos: "n",
+        gram: "'marker' = rotulador. 'Doesn't work' = no funciona — lo verás en detalle más adelante, de momento fíjate en el vocabulario."
+      },
+      {
+        t: "I'm reading a {{book}}.",
+        es: "Estoy leyendo un libro.",
+        pos: "n",
+        gram: "'book' = libro (sustantivo). También existe el verbo 'to book' = reservar (un vuelo, una mesa) — un significado totalmente distinto."
+      },
+      {
+        t: "This {{book}} is very good.",
+        es: "Este libro es muy bueno.",
+        pos: "n",
+        gram: "'book' = libro. 'Very' siempre va antes del adjetivo: 'very good', nunca 'good very'."
+      },
+      {
+        t: "{{This}} is my phone.",
+        es: "Este es mi teléfono.",
+        pos: "pron",
+        gram: "'this' = esto/este, para lo que tienes cerca o en la mano — ya visto en la gramática de esta unidad."
+      },
+      {
+        t: "Is {{this}} your book?",
+        es: "¿Es este tu libro?",
+        pos: "pron",
+        gram: "'this' en preguntas: Is this + tu/your + sustantivo? Se responde con 'Yes, it is' / 'No, it's not'."
+      },
+      {
+        t: "{{That}} is my car.",
+        es: "Aquel es mi coche.",
+        pos: "pron",
+        gram: "'that' = eso/aquello, para lo que está lejos. Contraste directo con 'this' (cerca)."
+      },
+      {
+        t: "Is {{that}} a chair?",
+        es: "¿Es aquello una silla?",
+        pos: "pron",
+        gram: "'that' en preguntas sobre algo lejano: Is that + a/an + sustantivo?"
+      },
+      {
+        t: "I have a {{bottle}} of water.",
+        es: "Tengo una botella de agua.",
+        pos: "n",
+        gram: "'bottle' = botella. 'A bottle OF water' es la forma natural de decirlo en inglés — siempre con 'of' entre el envase y el contenido."
+      },
+      {
+        t: "The {{bottle}} is empty.",
+        es: "La botella está vacía.",
+        pos: "n",
+        gram: "'bottle' = botella. 'Empty' = vacío/vacía — los adjetivos en inglés no cambian con el género del sustantivo."
+      },
+      {
+        t: "My {{notebook}} is red.",
+        es: "Mi cuaderno es rojo.",
+        pos: "n",
+        gram: "'notebook' = cuaderno. En otro contexto también significa 'laptop' (notebook computer)."
+      },
+      {
+        t: "I write in my {{notebook}} every day.",
+        es: "Escribo en mi cuaderno todos los días.",
+        pos: "n",
+        gram: "'notebook' = cuaderno. 'In my notebook' usa 'in' porque escribes DENTRO de sus páginas."
+      },
+      {
+        t: "Close the {{door}}, please.",
+        es: "Cierra la puerta, por favor.",
+        pos: "n",
+        gram: "'door' = puerta. 'Close the door' es una orden simple (imperativo): verbo + objeto, sin sujeto — igual que en español."
+      },
+      {
+        t: "The {{door}} is open.",
+        es: "La puerta está abierta.",
+        pos: "n",
+        gram: "'door' = puerta. 'Open' = abierto/a, mismo adjetivo para ambos géneros."
+      },
+      {
+        t: "Open the {{window}}.",
+        es: "Abre la ventana.",
+        pos: "n",
+        gram: "'window' = ventana. Cuidado con la pronunciación: la 'w' es suave, no se pronuncia como 'gu' fuerte del español."
+      },
+      {
+        t: "The {{window}} is dirty.",
+        es: "La ventana está sucia.",
+        pos: "n",
+        gram: "'window' = ventana. 'Dirty' = sucio/a."
+      },
+      {
+        t: "The book is on the {{floor}}.",
+        es: "El libro está en el suelo.",
+        pos: "n",
+        gram: "'floor' = suelo. También significa 'piso' de un edificio: 'the first floor' = el primer piso."
+      },
+      {
+        t: "Sit on the {{floor}}.",
+        es: "Siéntate en el suelo.",
+        pos: "n",
+        gram: "'floor' = suelo. 'On the floor' usa 'on' porque es una superficie, igual que 'on the table'."
+      },
+      {
+        t: "Look at the {{board}}.",
+        es: "Mira la pizarra.",
+        pos: "n",
+        gram: "'board' = pizarra. En otros contextos significa 'tablero' o 'junta directiva'."
+      },
+      {
+        t: "The teacher writes on the {{board}}.",
+        es: "El profesor escribe en la pizarra.",
+        pos: "n",
+        gram: "'board' = pizarra. 'On the board' usa 'on', como con todas las superficies."
+      },
+      {
+        t: "The phone is on the {{table}}.",
+        es: "El teléfono está en la mesa.",
+        pos: "n",
+        gram: "'table' = mesa. Ya visto en la gramática: 'it's on the table' usa 'on', no 'in'."
+      },
+      {
+        t: "This {{table}} is big.",
+        es: "Esta mesa es grande.",
+        pos: "n",
+        gram: "'table' = mesa."
+      },
+      {
+        t: "Sit on the {{chair}}.",
+        es: "Siéntate en la silla.",
+        pos: "n",
+        gram: "'chair' = silla."
+      },
+      {
+        t: "That {{chair}} is broken.",
+        es: "Esa silla está rota.",
+        pos: "n",
+        gram: "'chair' = silla. 'Broken' = rota/roto."
+      },
+      {
+        t: "The light is on the {{ceiling}}.",
+        es: "La luz está en el techo.",
+        pos: "n",
+        gram: "'ceiling' = techo, el interior de una habitación. No confundir con 'roof' (el techo exterior de un edificio)."
+      },
+      {
+        t: "The {{ceiling}} is very high.",
+        es: "El techo es muy alto.",
+        pos: "n",
+        gram: "'ceiling' = techo interior. 'High' = alto."
+      },
+      {
+        t: "Put the papers in the {{folder}}.",
+        es: "Pon los papeles en la carpeta.",
+        pos: "n",
+        gram: "'folder' = carpeta (física o digital, en la computadora)."
+      },
+      {
+        t: "This {{folder}} is empty.",
+        es: "Esta carpeta está vacía.",
+        pos: "n",
+        gram: "'folder' = carpeta."
+      },
+      {
+        t: "My {{phone}} is new.",
+        es: "Mi teléfono es nuevo.",
+        pos: "n",
+        gram: "'phone' es la forma corta de 'telephone' — la más usada al hablar."
+      },
+      {
+        t: "Where is your {{phone}}?",
+        es: "¿Dónde está tu teléfono?",
+        pos: "n",
+        gram: "'phone' = teléfono. 'Where is...?' pide ubicación, se responde con 'It's on/in...'."
+      },
+      {
+        t: "The {{clock}} is on the wall.",
+        es: "El reloj está en la pared.",
+        pos: "n",
+        gram: "'clock' = reloj de PARED o de mesa (no se lleva puesto). Para el de pulsera se usa 'watch'."
+      },
+      {
+        t: "That {{clock}} is old.",
+        es: "Ese reloj es viejo.",
+        pos: "n",
+        gram: "'clock' = reloj (de pared/mesa). 'Old' = viejo/antiguo."
+      },
+      {
+        t: "I have a new {{watch}}.",
+        es: "Tengo un reloj de pulsera nuevo.",
+        pos: "n",
+        gram: "'watch' = reloj de PULSERA (se lleva puesto). También es un verbo: 'to watch' = mirar/ver."
+      },
+      {
+        t: "Is this your {{watch}}?",
+        es: "¿Es este tu reloj?",
+        pos: "n",
+        gram: "'watch' = reloj de pulsera."
+      },
+      {
+        t: "The {{classroom}} is big.",
+        es: "El aula es grande.",
+        pos: "n",
+        gram: "'classroom' = aula/salón de clase. Palabra compuesta: class (clase) + room (habitación)."
+      },
+      {
+        t: "We are in the {{classroom}}.",
+        es: "Estamos en el aula.",
+        pos: "n",
+        gram: "'classroom' = aula. 'We are' (nunca contraído a 'we's') = 'we're'."
+      },
+      {
+        t: "She has a gold {{ring}}.",
+        es: "Ella tiene un anillo de oro.",
+        pos: "n",
+        gram: "'ring' = anillo. También es verbo (sonar, tocar el timbre) y sustantivo para 'sonido/timbre'."
+      },
+      {
+        t: "Is that your {{ring}}?",
+        es: "¿Es ese tu anillo?",
+        pos: "n",
+        gram: "'ring' = anillo."
+      },
+      {
+        t: "This {{car}} is expensive.",
+        es: "Este coche es caro.",
+        pos: "n",
+        gram: "'car' = coche/auto. Ya visto en la gramática: 'that's a car'."
+      },
+      {
+        t: "Is that your {{car}}?",
+        es: "¿Es ese tu coche?",
+        pos: "n",
+        gram: "'car' = coche."
+      },
+      {
+        t: "The store is on this {{street}}.",
+        es: "La tienda está en esta calle.",
+        pos: "n",
+        gram: "'street' = calle. 'On the street' usa 'on' — otra excepción de las preposiciones de lugar, como 'on the table'."
+      },
+      {
+        t: "This {{street}} is very long.",
+        es: "Esta calle es muy larga.",
+        pos: "n",
+        gram: "'street' = calle. 'Long' = largo/a."
+      },
+      {
+        t: "The wall is {{white}}.",
+        es: "La pared es blanca.",
+        pos: "adj",
+        gram: "'white' = blanco. Los adjetivos van ANTES del sustantivo ('a white car', nunca 'a car white') y nunca cambian de género ni número."
+      },
+      {
+        t: "I have a {{white}} car.",
+        es: "Tengo un coche blanco.",
+        pos: "adj",
+        gram: "'white' = blanco. Recuerda: adjetivo + sustantivo, siempre en ese orden."
+      },
+      {
+        t: "That phone is {{black}}.",
+        es: "Ese teléfono es negro.",
+        pos: "adj",
+        gram: "'black' = negro. Mismo orden que todos los adjetivos: adjetivo antes del sustantivo."
+      },
+      {
+        t: "The board is {{black}}.",
+        es: "La pizarra es negra.",
+        pos: "adj",
+        gram: "'black' = negro/a, mismo adjetivo para ambos géneros."
+      },
+      {
+        t: "Look at the {{map}}.",
+        es: "Mira el mapa.",
+        pos: "n",
+        gram: "'map' = mapa."
+      },
+      {
+        t: "This {{map}} is old.",
+        es: "Este mapa es viejo.",
+        pos: "n",
+        gram: "'map' = mapa."
+      },
+      {
+        t: "{{Where}} is the bus station?",
+        es: "¿Dónde está la estación de autobuses?",
+        pos: "adv",
+        gram: "'where' = dónde. Siempre con inversión: where + is + sustantivo?"
+      },
+      {
+        t: "{{What}} is this place?",
+        es: "¿Qué es este lugar?",
+        pos: "pron",
+        gram: "'what' = qué, para preguntar por la identidad de algo — ya visto en la gramática."
+      },
+      {
+        t: "France is a {{country}}.",
+        es: "Francia es un país.",
+        pos: "n",
+        gram: "'country' = país."
+      },
+      {
+        t: "Which {{country}} is this?",
+        es: "¿Qué país es este?",
+        pos: "n",
+        gram: "'country' = país."
+      },
+      {
+        t: "Russia is in the {{north}}.",
+        es: "Rusia está en el norte.",
+        pos: "n",
+        gram: "'north' = norte. Se usa con 'in the north' para ubicación general."
+      },
+      {
+        t: "The road goes {{north}}.",
+        es: "La carretera va hacia el norte.",
+        pos: "n",
+        gram: "'north' = norte."
+      },
+      {
+        t: "Italy is in the {{south}} of Europe.",
+        es: "Italia está en el sur de Europa.",
+        pos: "n",
+        gram: "'south' = sur."
+      },
+      {
+        t: "The river goes {{south}}.",
+        es: "El río va hacia el sur.",
+        pos: "n",
+        gram: "'south' = sur."
+      },
+      {
+        t: "This {{road}} is long.",
+        es: "Esta carretera es larga.",
+        pos: "n",
+        gram: "'road' = calle/carretera, más grande que 'street' y normalmente fuera de la ciudad."
+      },
+      {
+        t: "The {{road}} is closed.",
+        es: "La carretera está cerrada.",
+        pos: "n",
+        gram: "'road' = carretera. 'Closed' = cerrada."
+      },
+      {
+        t: "Is that a {{plane}}?",
+        es: "¿Es eso un avión?",
+        pos: "n",
+        gram: "'plane' = avión, forma corta de 'airplane'. Ya visto en la gramática: 'Is it a plane?'"
+      },
+      {
+        t: "The {{plane}} is very big.",
+        es: "El avión es muy grande.",
+        pos: "n",
+        gram: "'plane' = avión."
+      },
+      {
+        t: "The {{train}} is fast.",
+        es: "El tren es rápido.",
+        pos: "n",
+        gram: "'train' = tren."
+      },
+      {
+        t: "Is this the {{train}} to Madrid?",
+        es: "¿Es este el tren a Madrid?",
+        pos: "n",
+        gram: "'train' = tren. 'To Madrid' = con destino a Madrid."
+      },
+      {
+        t: "The bus {{station}} is near.",
+        es: "La estación de autobuses está cerca.",
+        pos: "n",
+        gram: "'bus station' = estación de autobuses, palabra compuesta (bus + station)."
+      },
+      {
+        t: "Where is the bus {{station}}?",
+        es: "¿Dónde está la estación de autobuses?",
+        pos: "n",
+        gram: "'station' = estación."
+      },
+      {
+        t: "I ride my {{bicycle}} every day.",
+        es: "Ando en bicicleta todos los días.",
+        pos: "n",
+        gram: "'bicycle' = bicicleta. Forma corta muy común: 'bike'."
+      },
+      {
+        t: "This {{bicycle}} is new.",
+        es: "Esta bicicleta es nueva.",
+        pos: "n",
+        gram: "'bicycle' = bicicleta."
+      },
+      {
+        t: "The {{bus}} is late.",
+        es: "El autobús llega tarde.",
+        pos: "n",
+        gram: "'bus' = autobús. Ya visto: 'that's not a car, it's a bus'."
+      },
+      {
+        t: "Is this the right {{bus}}?",
+        es: "¿Es este el autobús correcto?",
+        pos: "n",
+        gram: "'bus' = autobús. 'Right' aquí significa 'correcto', no 'derecha'."
+      },
+      {
+        t: "That {{ship}} is huge.",
+        es: "Ese barco es enorme.",
+        pos: "n",
+        gram: "'ship' = barco grande (de carga o pasajeros). Para uno pequeño se usa 'boat'."
+      },
+      {
+        t: "The {{ship}} is in the port.",
+        es: "El barco está en el puerto.",
+        pos: "n",
+        gram: "'ship' = barco grande."
+      },
+      {
+        t: "I see a {{sheep}} in the field.",
+        es: "Veo una oveja en el campo.",
+        pos: "n",
+        gram: "'sheep' = oveja. Ojo: singular y plural se escriben IGUAL ('one sheep, two sheep'), no existe 'sheeps'."
+      },
+      {
+        t: "That {{sheep}} is white.",
+        es: "Esa oveja es blanca.",
+        pos: "n",
+        gram: "'sheep' = oveja (singular = plural, palabra invariable)."
+      },
+      {
+        t: "We have a small {{boat}}.",
+        es: "Tenemos un bote pequeño.",
+        pos: "n",
+        gram: "'boat' = bote/barco pequeño. Contraste con 'ship' (barco grande)."
+      },
+      {
+        t: "Is that your {{boat}}?",
+        es: "¿Es ese tu bote?",
+        pos: "n",
+        gram: "'boat' = bote pequeño."
+      },
+      {
+        t: "The {{river}} is very long.",
+        es: "El río es muy largo.",
+        pos: "n",
+        gram: "'river' = río."
+      },
+      {
+        t: "This city is on a {{river}}.",
+        es: "Esta ciudad está en un río.",
+        pos: "n",
+        gram: "'river' = río."
+      },
+      {
+        t: "Madrid is a big {{city}}.",
+        es: "Madrid es una ciudad grande.",
+        pos: "n",
+        gram: "'city' = ciudad. Ya visto en la gramática: 'Madrid is a big city'."
+      },
+      {
+        t: "This {{city}} is very old.",
+        es: "Esta ciudad es muy vieja.",
+        pos: "n",
+        gram: "'city' = ciudad."
+      },
+      {
+        t: "This is a small {{province}}.",
+        es: "Esta es una provincia pequeña.",
+        pos: "n",
+        gram: "'province' = provincia."
+      },
+      {
+        t: "Which {{province}} is this?",
+        es: "¿Qué provincia es esta?",
+        pos: "n",
+        gram: "'province' = provincia."
+      },
+      {
+        t: "This is a nice {{place}}.",
+        es: "Este es un lugar bonito.",
+        pos: "n",
+        gram: "'place' = lugar."
+      },
+      {
+        t: "What {{place}} is this?",
+        es: "¿Qué lugar es este?",
+        pos: "n",
+        gram: "'place' = lugar."
+      },
+      {
+        t: "{{Germany}} is in Europe.",
+        es: "Alemania está en Europa.",
+        pos: "n",
+        gram: "'Germany' = Alemania. Los nombres de países siempre llevan mayúscula inicial."
+      },
+      {
+        t: "I want to visit {{Germany}}.",
+        es: "Quiero visitar Alemania.",
+        pos: "n",
+        gram: "'Germany' = Alemania."
+      },
+      {
+        t: "{{France}} is not in America.",
+        es: "Francia no está en América.",
+        pos: "n",
+        gram: "'France' = Francia. Ya visto en la gramática: 'Spain is not in America'."
+      },
+      {
+        t: "Paris is in {{France}}.",
+        es: "París está en Francia.",
+        pos: "n",
+        gram: "'France' = Francia."
+      },
+      {
+        t: "The {{United}} States is big.",
+        es: "Los Estados Unidos es grande.",
+        pos: "n",
+        gram: "'the United States' = los Estados Unidos — siempre lleva 'the' delante, a diferencia de la mayoría de países."
+      },
+      {
+        t: "I live in the {{United}} States.",
+        es: "Vivo en los Estados Unidos.",
+        pos: "n",
+        gram: "'the United States' lleva 'the' siempre delante."
+      },
+      {
+        t: "{{Russia}} is very big.",
+        es: "Rusia es muy grande.",
+        pos: "n",
+        gram: "'Russia' = Rusia."
+      },
+      {
+        t: "Moscow is in {{Russia}}.",
+        es: "Moscú está en Rusia.",
+        pos: "n",
+        gram: "'Russia' = Rusia."
+      },
+      {
+        t: "{{Italy}} is a beautiful country.",
+        es: "Italia es un país hermoso.",
+        pos: "n",
+        gram: "'Italy' = Italia."
+      },
+      {
+        t: "Rome is in {{Italy}}.",
+        es: "Roma está en Italia.",
+        pos: "n",
+        gram: "'Italy' = Italia."
+      },
+      {
+        t: "London is in {{England}}.",
+        es: "Londres está en Inglaterra.",
+        pos: "n",
+        gram: "'England' = Inglaterra. No confundir con 'the United Kingdom' (Reino Unido), que incluye más países."
+      },
+      {
+        t: "I want to visit {{England}}.",
+        es: "Quiero visitar Inglaterra.",
+        pos: "n",
+        gram: "'England' = Inglaterra."
+      },
+      {
+        t: "I need a piece of {{paper}}.",
+        es: "Necesito un papel.",
+        pos: "n",
+        gram: "'paper' = papel. 'A piece of paper' es la forma natural de decir 'una hoja' — es un sustantivo incontable."
+      },
+      {
+        t: "This {{paper}} is white.",
+        es: "Este papel es blanco.",
+        pos: "n",
+        gram: "'paper' = papel."
+      },
+      {
+        t: "Where is my {{eraser}}?",
+        es: "¿Dónde está mi goma?",
+        pos: "n",
+        gram: "'eraser' = goma de borrar (inglés americano). En inglés británico se dice 'rubber'."
+      },
+      {
+        t: "This {{eraser}} is small.",
+        es: "Esta goma es pequeña.",
+        pos: "n",
+        gram: "'eraser' = goma de borrar."
+      },
+      {
+        t: "I drink {{water}} every day.",
+        es: "Bebo agua todos los días.",
+        pos: "n",
+        gram: "'water' = agua, sustantivo incontable: no se dice 'a water', sino 'some water' o simplemente 'water'."
+      },
+      {
+        t: "This {{water}} is cold.",
+        es: "Esta agua está fría.",
+        pos: "n",
+        gram: "'water' = agua. 'Cold' = frío/a."
+      },
+      {
+        t: "I like {{chocolate}}.",
+        es: "Me gusta el chocolate.",
+        pos: "n",
+        gram: "'chocolate' = chocolate, también incontable como 'water'."
+      },
+      {
+        t: "This {{chocolate}} is very good.",
+        es: "Este chocolate es muy bueno.",
+        pos: "n",
+        gram: "'chocolate' = chocolate."
+      },
+      {
+        t: "I eat an {{apple}} every day.",
+        es: "Como una manzana todos los días.",
+        pos: "n",
+        gram: "'apple' empieza con vocal, así que usa 'an', no 'a': 'an apple'."
+      },
+      {
+        t: "This {{apple}} is red.",
+        es: "Esta manzana es roja.",
+        pos: "n",
+        gram: "'apple' = manzana."
+      },
+      {
+        t: "I want an {{orange}}.",
+        es: "Quiero una naranja.",
+        pos: "n",
+        gram: "'an orange' = una naranja, con 'an' porque empieza con vocal. 'Orange' también es un color (naranja)."
+      },
+      {
+        t: "This {{orange}} is very sweet.",
+        es: "Esta naranja es muy dulce.",
+        pos: "n",
+        gram: "'orange' = naranja. 'Sweet' = dulce."
+      },
+      {
+        t: "I {{eat}} an apple every day.",
+        es: "Como una manzana todos los días.",
+        pos: "v",
+        gram: "'eat' = comer, forma base usada con I/you/we/they. Con 'he/she/it' se le añade una 's': 'eats' — lo verás más adelante."
+      },
+      {
+        t: "I {{eat}} chocolate every day.",
+        es: "Como chocolate todos los días.",
+        pos: "v",
+        gram: "'eat' = comer (forma base)."
+      },
+      {
+        t: "I {{drink}} water every morning.",
+        es: "Bebo agua cada mañana.",
+        pos: "v",
+        gram: "'drink' = beber (forma base). Igual que 'eat', con 'he/she/it' se dice 'drinks'."
+      },
+      {
+        t: "I {{drink}} water at home.",
+        es: "Bebo agua en casa.",
+        pos: "v",
+        gram: "'drink' = beber. 'At home' = en casa, expresión fija con 'at'."
+      },
+      {
+        t: "This apple is {{red}}.",
+        es: "Esta manzana es roja.",
+        pos: "adj",
+        gram: "'red' = rojo. Adjetivo antes del sustantivo: 'a red car', nunca 'a car red'."
+      },
+      {
+        t: "I have a {{red}} car.",
+        es: "Tengo un coche rojo.",
+        pos: "adj",
+        gram: "'red' = rojo."
+      },
+      {
+        t: "This chair is {{green}}.",
+        es: "Esta silla es verde.",
+        pos: "adj",
+        gram: "'green' = verde."
+      },
+      {
+        t: "The board is {{green}}.",
+        es: "La pizarra es verde.",
+        pos: "adj",
+        gram: "'green' = verde."
+      },
+      {
+        t: "This book is {{good}}.",
+        es: "Este libro es bueno.",
+        pos: "adj",
+        gram: "'good' = bueno. Tiene comparativo irregular (better, best) que verás más adelante."
+      },
+      {
+        t: "The chocolate is very {{good}}.",
+        es: "El chocolate es muy bueno.",
+        pos: "adj",
+        gram: "'good' = bueno."
+      },
+      {
+        t: "This chair is {{bad}}.",
+        es: "Esta silla es mala.",
+        pos: "adj",
+        gram: "'bad' = malo. También irregular en comparativo (worse, worst)."
+      },
+      {
+        t: "That is a {{bad}} car.",
+        es: "Ese es un coche malo.",
+        pos: "adj",
+        gram: "'bad' = malo."
+      },
+      {
+        t: "This is a {{big}} city.",
+        es: "Esta es una ciudad grande.",
+        pos: "adj",
+        gram: "'big' = grande. Ya visto: 'Madrid is a big city'."
+      },
+      {
+        t: "That dog is very {{big}}.",
+        es: "Ese perro es muy grande.",
+        pos: "adj",
+        gram: "'big' = grande."
+      },
+      {
+        t: "This is a {{small}} box.",
+        es: "Esta es una caja pequeña.",
+        pos: "adj",
+        gram: "'small' = pequeño."
+      },
+      {
+        t: "That town is very {{small}}.",
+        es: "Ese pueblo es muy pequeño.",
+        pos: "adj",
+        gram: "'small' = pequeño."
+      },
+      {
+        t: "This city is {{pretty}}.",
+        es: "Esta ciudad es bonita.",
+        pos: "adj",
+        gram: "'pretty' = bonito/lindo. También significa 'bastante': 'pretty good' = bastante bueno."
+      },
+      {
+        t: "That is a {{pretty}} dog.",
+        es: "Ese es un perro bonito.",
+        pos: "adj",
+        gram: "'pretty' = bonito."
+      },
+      {
+        t: "That car is {{ugly}}.",
+        es: "Ese coche es feo.",
+        pos: "adj",
+        gram: "'ugly' = feo."
+      },
+      {
+        t: "This box is {{ugly}}.",
+        es: "Esta caja es fea.",
+        pos: "adj",
+        gram: "'ugly' = feo."
+      },
+      {
+        t: "That man is {{rich}}.",
+        es: "Ese hombre es rico.",
+        pos: "adj",
+        gram: "'rich' = rico."
+      },
+      {
+        t: "This is a {{rich}} country.",
+        es: "Este es un país rico.",
+        pos: "adj",
+        gram: "'rich' = rico."
+      },
+      {
+        t: "That woman is {{poor}}.",
+        es: "Esa mujer es pobre.",
+        pos: "adj",
+        gram: "'poor' = pobre."
+      },
+      {
+        t: "This is a {{poor}} country.",
+        es: "Este es un país pobre.",
+        pos: "adj",
+        gram: "'poor' = pobre."
+      },
+      {
+        t: "This dog is {{very}} big.",
+        es: "Este perro es muy grande.",
+        pos: "adv",
+        gram: "'very' = muy. Va ANTES del adjetivo: 'very big', nunca 'big very'."
+      },
+      {
+        t: "That computer is {{very}} old.",
+        es: "Esa computadora es muy vieja.",
+        pos: "adv",
+        gram: "'very' = muy."
+      },
+      {
+        t: "That {{man}} is rich.",
+        es: "Ese hombre es rico.",
+        pos: "n",
+        gram: "'man' = hombre. Plural irregular: 'men' (no 'mans') — lo verás más adelante."
+      },
+      {
+        t: "This man is a {{teacher}}.",
+        es: "Este hombre es profesor.",
+        pos: "n",
+        gram: "'man' = hombre. 'Teacher' = profesor/a, mismo sustantivo para ambos géneros."
+      },
+      {
+        t: "That {{woman}} is a doctor.",
+        es: "Esa mujer es médica.",
+        pos: "n",
+        gram: "'woman' = mujer. Plural irregular: 'women' (se pronuncia distinto: /wímen/)."
+      },
+      {
+        t: "This {{woman}} is rich.",
+        es: "Esta mujer es rica.",
+        pos: "n",
+        gram: "'woman' = mujer."
+      },
+      {
+        t: "I have a {{dog}}.",
+        es: "Tengo un perro.",
+        pos: "n",
+        gram: "'dog' = perro."
+      },
+      {
+        t: "That {{dog}} is very big.",
+        es: "Ese perro es muy grande.",
+        pos: "n",
+        gram: "'dog' = perro."
+      },
+      {
+        t: "My {{cat}} is black.",
+        es: "Mi gato es negro.",
+        pos: "n",
+        gram: "'cat' = gato."
+      },
+      {
+        t: "Is that your {{cat}}?",
+        es: "¿Es ese tu gato?",
+        pos: "n",
+        gram: "'cat' = gato."
+      },
+      {
+        t: "The pen is in the {{box}}.",
+        es: "El boli está en la caja.",
+        pos: "n",
+        gram: "'box' = caja. Plural irregular: 'boxes' (con -es, no solo -s, porque termina en x) — lo verás más adelante."
+      },
+      {
+        t: "This {{box}} is very small.",
+        es: "Esta caja es muy pequeña.",
+        pos: "n",
+        gram: "'box' = caja."
+      },
+      {
+        t: "My {{computer}} is new.",
+        es: "Mi computadora es nueva.",
+        pos: "n",
+        gram: "'computer' = computadora/ordenador. En España se dice 'ordenador'; en Latinoamérica, 'computadora'."
+      },
+      {
+        t: "Is this your {{computer}}?",
+        es: "¿Es esta tu computadora?",
+        pos: "n",
+        gram: "'computer' = computadora."
+      }
+    ]
   }
 ];
