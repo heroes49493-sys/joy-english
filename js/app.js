@@ -2419,20 +2419,34 @@
     "Sports and health", "Something I learned this week"
   ];
 
-  // Errores típicos de hispanohablantes (alta confianza)
+  // Errores típicos de hispanohablantes (alta confianza).
+  // `why` = por qué está mal, en español — se guarda junto al error en el Baúl
+  // para que el Drill siempre pueda explicarte el porqué (pedido del usuario).
   const ERROR_PATTERNS = [
-    { re: /\bpeople is\b/i, bad: "people is", fix: "people are" },
-    { re: /\bi have (\d+|twenty|thirty|forty) years?\b/i, bad: "I have … years", fix: "I am … years old" },
-    { re: /\bdepend of\b/i, bad: "depend of", fix: "depend on" },
-    { re: /\bi am agree\b/i, bad: "I am agree", fix: "I agree" },
-    { re: /\bmarried with\b/i, bad: "married with", fix: "married to" },
-    { re: /\bexplain me\b/i, bad: "explain me", fix: "explain to me" },
-    { re: /\bmore better\b/i, bad: "more better", fix: "better" },
-    { re: /\bfor to \w+/i, bad: "for to + verbo", fix: "to + verbo (I came to learn)" },
-    { re: /\bthe most \w+ of all the\b/i, bad: "the most … of all the", fix: "the most … of all" },
-    { re: /\bmake a question\b/i, bad: "make a question", fix: "ask a question" },
-    { re: /\bwin money\b/i, bad: "win money", fix: "earn money" },
-    { re: /\bassist to\b/i, bad: "assist to", fix: "attend" }
+    { re: /\bpeople is\b/i, bad: "people is", fix: "people are",
+      why: "'People' ya es plural en inglés (= personas), así que va con 'are'. El error viene de pensar en 'la gente ES', que en español es singular." },
+    { re: /\bi have (\d+|twenty|thirty|forty) years?\b/i, bad: "I have … years", fix: "I am … years old",
+      why: "En inglés la edad no se TIENE, se ES: 'I am 25'. 'I have 25 years' es traducción literal de 'tengo 25 años' — un nativo entendería que posees 25 años de algo." },
+    { re: /\bdepend of\b/i, bad: "depend of", fix: "depend on",
+      why: "El verbo va con 'ON': 'it depends on you'. Las preposiciones casi nunca se traducen literalmente — 'depender DE' te empuja al 'of', pero en inglés siempre es 'depend on'." },
+    { re: /\bi am agree\b/i, bad: "I am agree", fix: "I agree",
+      why: "'Agree' ya es el verbo completo ('estar de acuerdo'), no un adjetivo: 'I agree'. El 'am' sobra — viene de traducir 'ESTOY de acuerdo'." },
+    { re: /\bmarried with\b/i, bad: "married with", fix: "married to",
+      why: "En inglés te casas 'TO' alguien: 'married to her'. 'Married with' es calco de 'casado CON' — de hecho 'married with children' significa casado y con hijos." },
+    { re: /\bexplain me\b/i, bad: "explain me", fix: "explain to me",
+      why: "'Explain' necesita 'to' antes de la persona: 'explain it TO me'. No funciona como 'tell me' — decir 'explain me' suena a que te expliquen A TI como tema." },
+    { re: /\bmore better\b/i, bad: "more better", fix: "better",
+      why: "'Better' YA es el comparativo de 'good' — nunca lleva 'more'. Es el equivalente de decir 'más mejor' en español." },
+    { re: /\bfor to \w+/i, bad: "for to + verbo", fix: "to + verbo (I came to learn)",
+      why: "Para expresar propósito basta 'to + verbo': 'I came TO learn'. 'For to' es calco de 'PARA + verbo' — el 'for' sobra siempre." },
+    { re: /\bthe most \w+ of all the\b/i, bad: "the most … of all the", fix: "the most … of all",
+      why: "El superlativo cierra con 'of all', sin repetir 'the': 'the best of all'. Repetirlo es arrastrar el 'de todos LOS…' del español." },
+    { re: /\bmake a question\b/i, bad: "make a question", fix: "ask a question",
+      why: "Las preguntas se preguntan, no se hacen: 'ASK a question'. 'Make a question' es calco de 'HACER una pregunta' — 'make' es fabricar algo." },
+    { re: /\bwin money\b/i, bad: "win money", fix: "earn money",
+      why: "El dinero trabajado se 'EARN' ('earn money'); 'win' es solo para premios, loterías y apuestas. En español 'ganar' cubre los dos, en inglés no." },
+    { re: /\bassist to\b/i, bad: "assist to", fix: "attend",
+      why: "'Assist' es un falso amigo: significa AYUDAR, no asistir. Para ir a una clase o evento se usa 'attend' (sin 'to'): 'I attend class'." }
   ];
 
   const FILLERS = ["um", "uh", "eh", "mmm", "hmm"];
@@ -2648,7 +2662,7 @@
     const fillers = words.filter((w) => FILLERS.includes(w)).length;
     const issues = [];
     for (const p of ERROR_PATTERNS) {
-      if (p.re.test(text)) issues.push({ bad: p.bad, fix: p.fix });
+      if (p.re.test(text)) issues.push({ bad: p.bad, fix: p.fix, why: p.why });
     }
     return {
       words: words.length,
@@ -2699,7 +2713,7 @@
       d.className = "issue-row";
       d.innerHTML = `⚠️ Dijiste <b>“${escapeHtml(iss.bad)}”</b> → mejor: <span class="fix">“${escapeHtml(iss.fix)}”</span> · guardado en tu baúl`;
       issuesEl.appendChild(d);
-      addVaultError(iss.bad, iss.fix, true);
+      addVaultError(iss.bad, iss.fix, true, iss.why || "");
     });
     if (!r.issues.length && r.fillers <= 2) {
       const d = document.createElement("div");
@@ -2852,7 +2866,9 @@
     pending.forEach((e) => {
       const row = document.createElement("div");
       row.className = "vault-row";
-      row.innerHTML = `<div class="txt">Di <span class="fix-part">“${escapeHtml(e.fix)}”</span>, no <span class="bad-part">“${escapeHtml(e.bad)}”</span></div>`;
+      row.innerHTML = `<div class="txt">Di <span class="fix-part">“${escapeHtml(e.fix)}”</span>, no <span class="bad-part">“${escapeHtml(e.bad)}”</span>` +
+        (e.explicacion ? `<br><small style="color:var(--text-dim)">${escapeHtml(e.explicacion)}</small>` : "") +
+        `</div>`;
       rl.appendChild(row);
     });
   }
@@ -2915,6 +2931,7 @@
     $("drill-progress").textContent =
       `Error ${drill.pos + 1} de ${drill.items.length} · aciertos: ${e.drillWins || 0}/3 para vencerlo`;
     $("drill-bad").textContent = `❌ “${e.bad}”`;
+    renderDrillWhy(e);
     const input = $("drill-input");
     input.value = "";
     input.className = "";
@@ -2925,6 +2942,51 @@
     $("drill-live").classList.add("hidden");
     $("drill-live").innerHTML = "";
     $("btn-drill-check").textContent = "Comprobar";
+  }
+
+  // 💡 El porqué del error, SIEMPRE visible al practicarlo (pedido del usuario:
+  // "que me explique por qué está mal, para no volver a repetir"). Los errores de
+  // patrones locales y los de la IA ya traen explicación; a los que no tienen
+  // (p. ej. agregados a mano), se la pide a Gemini UNA vez y queda guardada.
+  function renderDrillWhy(e) {
+    const box = $("drill-why");
+    if (e.explicacion) {
+      box.innerHTML = `💡 ${escapeHtml(e.explicacion)}` +
+        (e.ejemplos?.length
+          ? `<div class="drill-why-ej">${e.ejemplos.map((x) => `“${escapeHtml(x)}”`).join(" · ")}</div>`
+          : "");
+      box.classList.remove("hidden");
+      return;
+    }
+    box.innerHTML = "🤖 Preguntándole a la IA por qué está mal…";
+    box.classList.remove("hidden");
+    const id = e.id;
+    fetchErrorExplanation(e)
+      .then((r) => {
+        e.explicacion = r.explicacion || "";
+        e.ejemplos = Array.isArray(r.ejemplos) ? r.ejemplos.slice(0, 2) : [];
+        save();
+        renderVaultErrors(); // la lista del baúl también muestra el porqué ahora
+        if (drill.items[drill.pos]?.id === id) renderDrillWhy(e);
+      })
+      .catch(() => {
+        if (drill.items[drill.pos]?.id === id) {
+          box.innerHTML =
+            "💡 Este error no tiene explicación guardada. Enciende el servidor de IA " +
+            "(doble clic en “Iniciar Joy English”) y vuelve a practicarlo para que te explique el porqué.";
+        }
+      });
+  }
+
+  async function fetchErrorExplanation(e) {
+    const res = await fetch(`${AI_SERVER}/api/explain-error`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bad: e.bad, fix: e.fix })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Sin explicación.");
+    return data.resultado;
   }
 
   function checkDrill() {

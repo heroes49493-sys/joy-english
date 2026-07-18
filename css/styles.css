@@ -1099,6 +1099,22 @@ body {
   font-weight: 700;
   text-align: center;
 }
+/* 💡 El porqué del error en el Drill: siempre visible mientras lo practicas */
+.drill-why {
+  background: rgba(250, 204, 21, .07);
+  border: 1px solid rgba(250, 204, 21, .35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: .88rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.drill-why-ej {
+  margin-top: 6px;
+  color: var(--green);
+  font-style: italic;
+  font-size: .85rem;
+}
 .drill-panel input {
   background: var(--card);
   border: 2px solid var(--border);
