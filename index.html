@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=34">
+  <link rel="stylesheet" href="css/styles.css?v=35">
 </head>
 <body>
 
@@ -146,6 +146,7 @@
         <div id="mode-badge" class="mode-badge"></div>
         <div id="sentence" class="sentence"></div>
         <div id="translation" class="translation"></div>
+        <div id="variation-base" class="variation-base hidden"></div>
         <div class="card-tools">
           <button id="btn-tts" class="tool-btn" title="Escuchar la oración completa">🔊 Escuchar</button>
           <button id="btn-tts-slow" class="tool-btn" title="Escuchar lento">🐢 Lento</button>
@@ -604,7 +605,7 @@
   </nav>
 
   <script src="js/data.js?v=31"></script>
-  <script src="js/app.js?v=34"></script>
+  <script src="js/app.js?v=37"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)
     // y baja la última versión cuando el servidor está encendido.

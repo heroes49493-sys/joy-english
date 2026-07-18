@@ -43,11 +43,20 @@
         medium: { label: "🙂 Medio", desc: "Di la oración completa", points: 16 },
         hard: { label: "🔥 Difícil", desc: "Di la oración desde la traducción", points: 24 }
       }
+    },
+    variations: {
+      name: "🔄 Variaciones",
+      desc: "transforma la oración a negativo o pregunta",
+      beta: true,
+      diffs: {
+        easy: { label: "😌 Fácil", desc: "Elige la forma correcta", points: 14 },
+        hard: { label: "🔥 Difícil", desc: "Escríbela tú", points: 24 }
+      }
     }
   };
 
   // Umbral de palabras acertadas para dar por buena una oración completa
-  const SENTENCE_THRESHOLD = { listening: 0.85, speaking: 0.85, speakingMedium: 0.75 };
+  const SENTENCE_THRESHOLD = { listening: 0.85, speaking: 0.85, speakingMedium: 0.75, variations: 0.85 };
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
@@ -125,7 +134,8 @@
     gems: 0,                  // moneda de la tienda (independiente del XP, no se gasta el XP)
     boosts: { doubleXpAnswers: 0, skipCapDate: null }, // efectos activos comprados en la tienda
     bugReports: [],           // 🚩 errores reportados en frases, para exportar y revisar
-    deckFeedback: []          // 💬 sugerencias de organización de mazos, para exportar y revisar
+    deckFeedback: [],         // 💬 sugerencias de organización de mazos, para exportar y revisar
+    variationsCache: {}       // 🔄 negativo/pregunta ya generados por IA, por "colId:idx" (no repetir llamadas)
   });
 
   let state = load();
@@ -159,6 +169,7 @@
     if (!Array.isArray(s.talkSessions)) s.talkSessions = [];
     if (!Array.isArray(s.errorVault)) s.errorVault = [];
     if (!Array.isArray(s.deckFeedback)) s.deckFeedback = [];
+    if (!s.variationsCache || typeof s.variationsCache !== "object") s.variationsCache = {};
     // La bienvenida es solo para cuentas nuevas: si ya hay progreso, no molestar
     if (raw.welcomed === undefined && (raw.points || 0) > 0) s.welcomed = true;
     if (!Array.isArray(s.pinnedCols)) s.pinnedCols = ["ft1"];
@@ -870,7 +881,7 @@
     Object.entries(MODES).forEach(([id, m]) => {
       const btn = document.createElement("button");
       btn.className = "diff-btn play-mode-btn" + (state.mode === id ? " active" : "");
-      btn.innerHTML = `${m.name} <small>${m.desc}</small>`;
+      btn.innerHTML = `${m.name}${m.beta ? ' <span class="beta-badge">BETA</span>' : ""} <small>${m.desc}</small>`;
       btn.addEventListener("click", () => {
         state.mode = id;
         if (!MODES[id].diffs[state.difficulty]) state.difficulty = "easy";
@@ -890,7 +901,9 @@
         state.difficulty = id;
         save();
         $("play-modal").close();
-        if (pendingColId !== null) startRound(pendingColId);
+        if (pendingColId === null) return;
+        if (state.mode === "variations") startVariationsRound(pendingColId);
+        else startRound(pendingColId);
       });
       diffs.appendChild(btn);
     });
@@ -922,7 +935,7 @@
   }
 
   function isFullSentence() {
-    return state.difficulty === "hard" && state.mode !== "vocab";
+    return state.difficulty === "hard" && state.mode !== "vocab" && state.mode !== "variations";
   }
 
   // Graduación: una vez que ya reconoces la palabra (dominio ≥ 50%), Vocabulario
@@ -938,11 +951,13 @@
   function isWordInput() {
     return (state.mode === "vocab" && state.difficulty === "hard") ||
            (state.mode === "listening" && state.difficulty === "medium") ||
+           (state.mode === "variations" && state.difficulty === "hard") ||
            isGraduatedItem();
   }
 
   function isChoiceQuestion() {
-    return state.difficulty === "easy" && (state.mode === "vocab" || state.mode === "listening") &&
+    return state.difficulty === "easy" &&
+           (state.mode === "vocab" || state.mode === "listening" || state.mode === "variations") &&
            !isGraduatedItem();
   }
 
@@ -1037,6 +1052,7 @@
     game.answered = false;
     game.hintUsed = false;
     game.mustRetype = false;
+    if (item.variations) game.current.varType = Math.random() < 0.5 ? "negative" : "question";
 
     const mode = state.mode;
     const d = state.difficulty;
@@ -1076,7 +1092,17 @@
         renderBlankSentence();
         $("translation").textContent = d === "easy" ? game.current.s.es : "";
       }
+    } else if (mode === "variations") {
+      const type = game.current.varType;
+      renderPromptSentence(type === "negative"
+        ? "✏️ Escribe (o elige) la oración en NEGATIVO:"
+        : "❓ Convierte la oración en PREGUNTA:");
+      $("variation-base").classList.remove("hidden");
+      $("variation-base").innerHTML =
+        `“${escapeHtml(game.current.parsed.full)}”<br><i>${escapeHtml(game.current.s.es)}</i>`;
+      $("translation").textContent = "";
     }
+    if (mode !== "variations") $("variation-base").classList.add("hidden");
 
     const p = getProg(item.colId, item.idx);
     renderMastery(p ? p.m : 0);
@@ -1100,20 +1126,23 @@
     $("btn-tts-slow").classList.toggle("hidden", mode === "vocab");
 
     if (isChoiceQuestion()) {
-      renderChoices(4);
+      if (mode === "variations") renderVariationChoices();
+      else renderChoices(4);
       $("kbd-hint").textContent = "Teclas 1–4 para responder · Enter para continuar";
     } else if (isWordInput() || (mode === "listening" && d === "hard")) {
       const input = $("answer-input");
       input.value = "";
       input.className = "";
       input.disabled = false;
-      input.placeholder = isFullSentence()
-        ? "Escribe la oración completa que escuchas…"
-        : mode === "listening"
-          ? "Escribe la palabra que escuchas…"
-          : isGraduatedItem()
-            ? "La reconoces — ahora escríbela tú…"
-            : "Escribe la palabra que falta…";
+      input.placeholder = mode === "variations"
+        ? (game.current.varType === "negative" ? "Escribe la oración en negativo…" : "Escribe la pregunta…")
+        : isFullSentence()
+          ? "Escribe la oración completa que escuchas…"
+          : mode === "listening"
+            ? "Escribe la palabra que escuchas…"
+            : isGraduatedItem()
+              ? "La reconoces — ahora escríbela tú…"
+              : "Escribe la palabra que falta…";
       $("btn-giveup").disabled = false;
       $("btn-check").disabled = false;
       input.focus();
@@ -1176,6 +1205,28 @@
     });
   }
 
+  // 🔄 Variaciones fácil: opciones son ORACIONES completas (la correcta + los
+  // distractores que ya vinieron de Gemini junto con la variación).
+  function renderVariationChoices() {
+    const wrap = $("choices");
+    wrap.innerHTML = "";
+    const type = game.current.varType;
+    const v = game.current.variations;
+    const correct = type === "negative" ? v.negative : v.question;
+    const distractors = (type === "negative" ? v.negative_distractors : v.question_distractors) || [];
+    const options = shuffle([correct, ...distractors]);
+    options.forEach((text, i) => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn choice-btn-sentence";
+      btn.dataset.correct = text === correct ? "1" : "0";
+      btn.innerHTML = `<span class="key">${i + 1}</span>${escapeHtml(text)}`;
+      btn.classList.add("slide-in");
+      btn.style.animationDelay = `${i * 60}ms`;
+      btn.addEventListener("click", () => answerVariationChoice(btn));
+      wrap.appendChild(btn);
+    });
+  }
+
   // ---------- Responder ----------
   function answerChoice(btn) {
     if (game.answered) return;
@@ -1193,8 +1244,21 @@
     resolveAnswer(isCorrect, basePoints());
   }
 
+  // 🔄 Variaciones fácil: elegir entre oraciones completas (no palabras sueltas)
+  function answerVariationChoice(btn) {
+    if (game.answered) return;
+    const isCorrect = btn.dataset.correct === "1";
+    document.querySelectorAll(".choice-btn").forEach((b) => {
+      b.disabled = true;
+      if (b.dataset.correct === "1") b.classList.add("correct");
+    });
+    if (!isCorrect) btn.classList.add("wrong");
+    resolveAnswer(isCorrect, basePoints());
+  }
+
   function answerInput(giveUp = false) {
     if (game.answered) return;
+    if (state.mode === "variations" && state.difficulty === "hard") { answerVariationText(giveUp); return; }
     if (isFullSentence()) { answerFullSentence(giveUp); return; }
 
     const input = $("answer-input");
@@ -1253,6 +1317,58 @@
     resolveAnswer(isCorrect, basePoints());
   }
 
+  // 🔄 Variaciones difícil: escribir la negativa/pregunta completa. Se compara por
+  // solapamiento de palabras (como el dictado), no letra por letra: hay más de una
+  // forma correcta de decir lo mismo (doesn't vs does not) y ser demasiado estricto
+  // frustraría sin razón.
+  // Contracciones ↔ forma larga: para que "does not" no desalinee la comparación
+  // posicional frente a "doesn't" (mismo significado, distinto número de palabras).
+  const CONTRACTION_EXPANSIONS = {
+    "doesn't": "does not", "don't": "do not", "isn't": "is not", "aren't": "are not",
+    "wasn't": "was not", "weren't": "were not", "can't": "can not", "won't": "will not",
+    "haven't": "have not", "hasn't": "has not", "didn't": "did not", "couldn't": "could not",
+    "wouldn't": "would not", "shouldn't": "should not"
+  };
+  function expandContractions(words) {
+    const out = [];
+    words.forEach((w) => {
+      if (CONTRACTION_EXPANSIONS[w]) out.push(...CONTRACTION_EXPANSIONS[w].split(" "));
+      else out.push(w);
+    });
+    return out;
+  }
+
+  function answerVariationText(giveUp = false) {
+    const input = $("answer-input");
+    const typed = input.value.trim();
+    if (!giveUp && !typed) { input.focus(); return; }
+
+    const type = game.current.varType;
+    const v = game.current.variations;
+    const correctText = type === "negative" ? v.negative : v.question;
+
+    // Comparación POR POSICIÓN (no por bolsa de palabras): en Variaciones el orden
+    // ES la gramática que se evalúa — "Do you think I am right?" no es lo mismo
+    // que "Do I think you are right?" aunque compartan casi todas las palabras.
+    const target = expandContractions(normalizeWords(correctText));
+    const said = expandContractions(normalizeWords(typed));
+    const matched = new Set();
+    const len = Math.min(target.length, said.length);
+    for (let i = 0; i < len; i++) if (said[i] === target[i]) matched.add(i);
+    const pct = target.length ? matched.size / target.length : 0;
+    const isCorrect = !giveUp && pct >= SENTENCE_THRESHOLD.variations;
+
+    renderWordMatch(target, matched, `Escribiste: “${typed || "—"}”`, pct);
+    $("word-match").innerHTML += `<div class="variation-official">✅ Forma esperada: “${escapeHtml(correctText)}”</div>`;
+
+    input.disabled = true;
+    $("btn-check").disabled = true;
+    $("btn-giveup").disabled = true;
+    input.className = isCorrect ? "ok" : "bad";
+
+    resolveAnswer(isCorrect, basePoints());
+  }
+
   // approx=true: viene del micrófono, cuya precisión cae con acento no nativo
   // (documentado: ~95% con hablantes nativos, ~75-80% con acento extranjero).
   // El % es solo una referencia, no un veredicto — por eso el copy lo deja claro
@@ -1287,16 +1403,28 @@
   function resolveAnswer(isCorrect, pts) {
     game.answered = true;
     const { answer, before, after, full } = game.current.parsed;
+    let blank = null; // solo existe en el modo normal (huella de la palabra oculta)
 
-    const sentenceEl = $("sentence");
-    sentenceEl.classList.remove("dictation");
-    sentenceEl.innerHTML = "";
-    const blank = document.createElement("span");
-    blank.className = `blank ${isCorrect ? "filled-correct" : "filled-wrong"}`;
-    blank.id = "blank";
-    blank.textContent = answer;
-    sentenceEl.append(document.createTextNode(before), blank, document.createTextNode(after));
-    $("translation").textContent = game.current.s.es;
+    if (state.mode === "variations") {
+      const type = game.current.varType;
+      const v = game.current.variations;
+      const correctText = type === "negative" ? v.negative : v.question;
+      const correctEs = type === "negative" ? v.negative_es : v.question_es;
+      renderPromptSentence(correctText);
+      $("sentence").classList.toggle("filled-correct", isCorrect);
+      $("sentence").classList.toggle("filled-wrong", !isCorrect);
+      $("translation").textContent = correctEs;
+    } else {
+      const sentenceEl = $("sentence");
+      sentenceEl.classList.remove("dictation");
+      sentenceEl.innerHTML = "";
+      blank = document.createElement("span");
+      blank.className = `blank ${isCorrect ? "filled-correct" : "filled-wrong"}`;
+      blank.id = "blank";
+      blank.textContent = answer;
+      sentenceEl.append(document.createTextNode(before), blank, document.createTextNode(after));
+      $("translation").textContent = game.current.s.es;
+    }
 
     const prev = getProg(game.current.colId, game.current.idx);
     const oldM = prev ? prev.m : 0;
@@ -1342,7 +1470,7 @@
       fb.textContent = msg;
       fb.className = "feedback ok";
       floatPoints(`+${total}`);
-      animate(blank, "pop");
+      if (blank) animate(blank, "pop");
       playCorrectSound(game.streak);
       navigator.vibrate?.(25);
       if (game.streak > state.records.bestCombo) state.records.bestCombo = game.streak;
@@ -1361,9 +1489,15 @@
       }
     } else {
       game.streak = 0;
-      fb.textContent = state.mode === "speaking"
-        ? `✗ Faltó decir “${answer}” — escucha y repite`
-        : `✗ La respuesta era “${answer}”`;
+      if (state.mode === "variations") {
+        const type = game.current.varType;
+        const v = game.current.variations;
+        fb.textContent = `✗ La forma correcta era “${type === "negative" ? v.negative : v.question}”`;
+      } else {
+        fb.textContent = state.mode === "speaking"
+          ? `✗ Faltó decir “${answer}” — escucha y repite`
+          : `✗ La respuesta era “${answer}”`;
+      }
       fb.className = "feedback bad";
       animate($("sentence-card"), "shake");
       navigator.vibrate?.(70);
@@ -1389,7 +1523,13 @@
     // En Vocabulario no hay botones de audio ANTES de responder (a propósito, para no
     // resolver por oído), así que DESPUÉS de responder siempre se escucha la oración
     // correcta — acierte o falle — sin depender del ajuste "Leer la frase al responder".
-    if (state.settings.autoplay || state.mode === "vocab") speak(full);
+    if (state.mode === "variations") {
+      const type = game.current.varType;
+      const v = game.current.variations;
+      speak(type === "negative" ? v.negative : v.question);
+    } else if (state.settings.autoplay || state.mode === "vocab") {
+      speak(full);
+    }
     if (state.mode === "vocab") {
       // …y ahora que ya respondiste, los botones 🔊/🐢 vuelven para reescucharla
       $("btn-tts").classList.remove("hidden");
@@ -2402,7 +2542,9 @@
     if (game.answered || !/^[1-4]$/.test(e.key)) return;
     if (isChoiceQuestion()) {
       const btn = document.querySelectorAll(".choice-btn")[Number(e.key) - 1];
-      if (btn) answerChoice(btn);
+      if (!btn) return;
+      if (state.mode === "variations") answerVariationChoice(btn);
+      else answerChoice(btn);
     }
   });
 
@@ -2748,6 +2890,72 @@
 
   // ---------- 🤖 Análisis profundo con IA (opcional, servidor local) ----------
   const AI_SERVER = "http://localhost:4546";
+
+  // ---------- 🔄 Variaciones (BETA): negativo/pregunta por IA, con caché ----------
+  function variationsKey(colId, idx) {
+    return `${colId}:${idx}`;
+  }
+
+  async function fetchVariationsFor(colId, idx, sentence) {
+    const key = variationsKey(colId, idx);
+    if (state.variationsCache[key]) return state.variationsCache[key];
+    const full = parseSentence(sentence).full;
+    const res = await fetch(`${AI_SERVER}/api/variations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sentence: full, es: sentence.es })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Sin variaciones.");
+    state.variationsCache[key] = data.resultado;
+    save();
+    return data.resultado;
+  }
+
+  // Prepara toda la ronda ANTES de empezar a jugar: pide a Gemini (con tope de 3 a
+  // la vez) la negativa/pregunta de cada frase que no esté ya en caché. Las frases
+  // donde la IA falla se descartan de la ronda en vez de romper el juego.
+  async function startVariationsRound(colId) {
+    const queue = buildRound(colId);
+    if (queue.length === 0) {
+      const col = colId === "__fav__" ? null : findCollection(colId);
+      const hasSentences = colId === "__fav__" ? favoriteItems().length > 0 : !!col?.sentences.length;
+      showToast(hasSentences
+        ? "🎉 Ya completaste tus palabras nuevas de hoy — vuelve mañana o repasa otro mazo"
+        : "Ese mazo no tiene frases 😅");
+      return;
+    }
+    if (game.lastRoundOmittedFresh > 0) {
+      showToast(
+        `🎫 Cupo diario: quedan ${game.lastRoundOmittedFresh} frases nuevas de este mazo para ` +
+        `otro día. Súbelo en ⚙️ Ajustes o compra un pase en 🏪 Tienda para verlas hoy.`,
+        true
+      );
+    }
+    showToast("🔄 Preparando variaciones con IA… puede tardar unos segundos", true);
+    const prepared = [];
+    const CONCURRENCY = 3;
+    for (let i = 0; i < queue.length; i += CONCURRENCY) {
+      const chunk = queue.slice(i, i + CONCURRENCY);
+      const results = await Promise.all(chunk.map(async (item) => {
+        try {
+          return { ...item, variations: await fetchVariationsFor(item.colId, item.idx, item.s) };
+        } catch (e) {
+          return null; // se salta esta frase si la IA falla
+        }
+      }));
+      results.forEach((r) => { if (r) prepared.push(r); });
+    }
+    if (!prepared.length) {
+      showToast(
+        "⚠️ No se pudo conectar con el servidor de IA para Variaciones. Enciende " +
+        "\"Iniciar Joy English\" con tu API key de Gemini configurada e intenta de nuevo.",
+        true
+      );
+      return;
+    }
+    beginRound(prepared, colId);
+  }
 
   async function analizarConIA() {
     const btn = $("btn-ai-analyze");

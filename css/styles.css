@@ -357,6 +357,28 @@ body {
   min-height: 1.2em;
 }
 
+/* 🔄 Variaciones: la oración afirmativa dada, mostrada como referencia */
+.variation-base {
+  margin-top: 12px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: .95rem;
+  line-height: 1.6;
+}
+.variation-base i { color: var(--text-dim); }
+.choice-btn-sentence {
+  text-align: left;
+  white-space: normal;
+  line-height: 1.4;
+}
+.variation-official {
+  margin-top: 8px;
+  color: var(--green);
+  font-weight: 700;
+}
+
 .card-tools {
   margin-top: 18px;
   display: flex;
