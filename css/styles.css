@@ -293,13 +293,21 @@ body {
   padding: 8px 0 20px;
 }
 
-/* La pregunta se queda fija arriba cuando el teclado empuja la página (Safari
-   mueve el scroll para que el input escrito quede visible sobre el teclado,
-   y sin esto la tarjeta de la oración se iba fuera de la pantalla). */
+/* La pregunta se queda fija arriba cuando el teclado empuja la página. `position:
+   sticky` no alcanza: en iOS Safari se "despega" al reenfocar el input en la
+   frase siguiente (bug real, reportado jugando). Solución más sólida: la
+   pantalla de juego NO scrollea como un todo — mide exactamente el alto de
+   pantalla (100dvh) con overflow oculto, y solo `.play-area` (lo de abajo, con
+   el input) scrollea POR DENTRO. Así `.game-sticky-top` nunca se mueve, porque
+   ni siquiera pertenece al contenedor que hace scroll cuando aparece el teclado. */
+#screen-game.screen {
+  height: 100vh;
+  height: 100dvh;
+  padding-bottom: 0;
+  overflow: hidden;
+}
 .game-sticky-top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  flex-shrink: 0;
   background: var(--bg);
   padding-top: env(safe-area-inset-top);
   padding-bottom: 16px;
@@ -327,7 +335,16 @@ body {
 .game-streak { color: var(--gold); font-weight: 700; font-size: .95rem; }
 .game-points { color: var(--text-dim); font-size: .95rem; }
 
-.play-area { display: flex; flex-direction: column; gap: 16px; }
+.play-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0; /* imprescindible: sin esto un hijo flex no puede scrollear por dentro */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
 
 .sentence-card {
   background: var(--card);
