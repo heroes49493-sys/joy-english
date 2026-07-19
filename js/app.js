@@ -46,7 +46,7 @@
     },
     variations: {
       name: "🔄 Variaciones",
-      desc: "transforma la oración a negativo o pregunta",
+      desc: "transforma a negativo/pregunta (con to be y modales)",
       beta: true,
       diffs: {
         easy: { label: "😌 Fácil", desc: "Elige la forma correcta", points: 14 },
@@ -134,8 +134,7 @@
     gems: 0,                  // moneda de la tienda (independiente del XP, no se gasta el XP)
     boosts: { doubleXpAnswers: 0, skipCapDate: null }, // efectos activos comprados en la tienda
     bugReports: [],           // 🚩 errores reportados en frases, para exportar y revisar
-    deckFeedback: [],         // 💬 sugerencias de organización de mazos, para exportar y revisar
-    variationsCache: {}       // 🔄 negativo/pregunta ya generados por IA, por "colId:idx" (no repetir llamadas)
+    deckFeedback: []          // 💬 sugerencias de organización de mazos, para exportar y revisar
   });
 
   let state = load();
@@ -169,7 +168,7 @@
     if (!Array.isArray(s.talkSessions)) s.talkSessions = [];
     if (!Array.isArray(s.errorVault)) s.errorVault = [];
     if (!Array.isArray(s.deckFeedback)) s.deckFeedback = [];
-    if (!s.variationsCache || typeof s.variationsCache !== "object") s.variationsCache = {};
+    delete s.variationsCache; // ya no se usa (Variaciones dejó de depender de IA/caché)
     // La bienvenida es solo para cuentas nuevas: si ya hay progreso, no molestar
     if (raw.welcomed === undefined && (raw.points || 0) > 0) s.welcomed = true;
     if (!Array.isArray(s.pinnedCols)) s.pinnedCols = ["ft1"];
@@ -1409,11 +1408,12 @@
       const type = game.current.varType;
       const v = game.current.variations;
       const correctText = type === "negative" ? v.negative : v.question;
-      const correctEs = type === "negative" ? v.negative_es : v.question_es;
       renderPromptSentence(correctText);
       $("sentence").classList.toggle("filled-correct", isCorrect);
       $("sentence").classList.toggle("filled-wrong", !isCorrect);
-      $("translation").textContent = correctEs;
+      // No hay traducción de la variación (se genera con reglas, no con IA) — se
+      // muestra la del afirmativo original como referencia de significado.
+      $("translation").textContent = game.current.s.es;
     } else {
       const sentenceEl = $("sentence");
       sentenceEl.classList.remove("dictation");
@@ -2891,31 +2891,133 @@
   // ---------- 🤖 Análisis profundo con IA (opcional, servidor local) ----------
   const AI_SERVER = "http://localhost:4546";
 
-  // ---------- 🔄 Variaciones (BETA): negativo/pregunta por IA, con caché ----------
-  function variationsKey(colId, idx) {
-    return `${colId}:${idx}`;
-  }
+  // ---------- 🔄 Variaciones (BETA): negativo/pregunta por REGLAS, sin IA ----------
+  // A propósito NO usa el servidor de IA: transforma con gramática pura en JS, al
+  // instante y sin depender de nada externo. Alcance honesto: solo frases con
+  // "to be" (is/am/are/was/were, incluidas sus contracciones it's/that's/he's...)
+  // o un verbo modal (can/could/will/would/shall/should/may/might/must), que son
+  // los únicos casos donde invertir sujeto-verbo es 100% mecánico y confiable sin
+  // arriesgar un error gramatical. Frases con verbos léxicos (do-support: love,
+  // work, go...) o con "have/has/had" (ambiguo entre auxiliar y verbo principal)
+  // se EXCLUYEN de este modo — no vale la pena arriesgar enseñar mal.
+  const VAR_BE_WORDS = ["am", "is", "are", "was", "were"];
+  const VAR_MODAL_WORDS = ["can", "could", "will", "would", "shall", "should", "may", "might", "must"];
+  const VAR_BE_SWAP = { is: "are", are: "is", am: "are", was: "were", were: "was" };
+  const VAR_CONTRACTIONS = {
+    "i'm": ["I", "am"], "you're": ["you", "are"], "we're": ["we", "are"], "they're": ["they", "are"],
+    "it's": ["it", "is"], "that's": ["that", "is"], "he's": ["he", "is"], "she's": ["she", "is"],
+    "there's": ["there", "is"], "what's": ["what", "is"], "who's": ["who", "is"],
+    "i'll": ["I", "will"], "you'll": ["you", "will"], "he'll": ["he", "will"], "she'll": ["she", "will"],
+    "we'll": ["we", "will"], "they'll": ["they", "will"], "it'll": ["it", "will"], "that'll": ["that", "will"]
+  };
+  // Palabras que, al pasar de primera posición (mayúscula por ser inicio de
+  // oración) a segunda posición en la pregunta, deben ir en minúscula — salvo
+  // nombres propios, que no están en esta lista y por eso quedan como estaban.
+  const VAR_LOWERABLE_STARTS = [
+    "he", "she", "it", "we", "they", "you", "this", "that", "these", "those", "there",
+    "the", "a", "an", "my", "your", "his", "her", "our", "their", "its"
+  ];
+  // Verbos de "pensar/decir" que casi siempre anuncian una cláusula incrustada
+  // ("I THINK you are right" — el to-be real pertenece a esa cláusula, no a la
+  // oración principal). Si aparecen antes del to-be/modal encontrado, la frase
+  // se descarta: invertir ahí produciría una pregunta rota ("Are I think you...?").
+  const VAR_CLAUSE_VERBS = [
+    "think", "thinks", "know", "knows", "believe", "believes", "feel", "feels",
+    "hope", "hopes", "guess", "guesses", "suppose", "supposes", "say", "says", "said",
+    "tell", "tells", "told", "hear", "hears", "heard", "see", "sees", "saw",
+    "want", "wants", "wanted", "need", "needs", "needed", "like", "likes", "liked",
+    "love", "loves", "loved", "hate", "hates", "hated", "wish", "wishes", "wished"
+  ];
 
-  async function fetchVariationsFor(colId, idx, sentence) {
-    const key = variationsKey(colId, idx);
-    if (state.variationsCache[key]) return state.variationsCache[key];
-    const full = parseSentence(sentence).full;
-    const res = await fetch(`${AI_SERVER}/api/variations`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sentence: full, es: sentence.es })
+  function tokenizeForVariation(text) {
+    const raw = text.replace(/[.!?]+\s*$/, "").split(/\s+/);
+    const tokens = [];
+    raw.forEach((tok) => {
+      const clean = tok.replace(/[,;:]$/, "");
+      const expanded = VAR_CONTRACTIONS[clean.toLowerCase()];
+      if (expanded) {
+        // Preserva la mayúscula original ("It's" al inicio de oración → "It" no
+        // "it"), aunque el diccionario de contracciones esté en minúsculas.
+        const first = /^[A-Z]/.test(clean) ? varCapitalize(expanded[0]) : expanded[0];
+        tokens.push(first, ...expanded.slice(1));
+      } else tokens.push(clean);
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Sin variaciones.");
-    state.variationsCache[key] = data.resultado;
-    save();
-    return data.resultado;
+    return tokens;
   }
 
-  // Prepara toda la ronda ANTES de empezar a jugar: pide a Gemini (con tope de 3 a
-  // la vez) la negativa/pregunta de cada frase que no esté ya en caché. Las frases
-  // donde la IA falla se descartan de la ronda en vez de romper el juego.
-  async function startVariationsRound(colId) {
+  function varCapitalize(w) {
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }
+
+  // Intenta transformar UNA oración afirmativa a negativo/pregunta con reglas
+  // fijas. Devuelve null si no encuentra un "to be"/modal confiable — esa frase
+  // simplemente no entra en la ronda de Variaciones.
+  function tryLocalVariation(fullSentence) {
+    const lower = fullSentence.toLowerCase();
+    if (/\?\s*$/.test(fullSentence)) return null;               // ya es pregunta
+    if (/\bnot\b|n't|\bnever\b/.test(lower)) return null;        // ya es negativa
+    if (/\b(have|has|had)\b/.test(lower)) return null;           // ambiguo: ¿auxiliar o verbo principal?
+    if (/'d\b/.test(lower)) return null;                         // 'd ambiguo: ¿had o would?
+
+    const tokens = tokenizeForVariation(fullSentence);
+    if (tokens.length < 2) return null;
+
+    let idx = -1, isModal = false;
+    for (let i = 1; i < tokens.length; i++) {
+      const lw = tokens[i].toLowerCase();
+      if (VAR_BE_WORDS.includes(lw)) { idx = i; break; }
+      if (VAR_MODAL_WORDS.includes(lw)) { idx = i; isModal = true; break; }
+    }
+    if (idx === -1) return null; // ni to-be ni modal: no arriesgamos con verbos léxicos
+
+    const verb = tokens[idx];
+    const verbLower = verb.toLowerCase();
+    const subjectTokens = tokens.slice(0, idx);
+    const restTokens = tokens.slice(idx + 1);
+    const restStr = restTokens.join(" ");
+
+    // "I THINK you are right" — el to-be encontrado pertenece a una cláusula
+    // incrustada, no a la oración principal; invertir ahí da una pregunta rota
+    // ("Are I think you right?"). Si aparece un verbo de pensar/decir ANTES del
+    // to-be/modal, mejor no arriesgar.
+    if (subjectTokens.slice(1).some((w) => VAR_CLAUSE_VERBS.includes(w.toLowerCase()))) return null;
+    const subjectAffirm = subjectTokens.join(" ");
+
+    // Sujeto al pasar a 2ª posición en la pregunta: mismo texto, salvo que sea
+    // una de las palabras "minusculeables" (pronombre/artículo) — los nombres
+    // propios (no están en la lista) quedan con su mayúscula intacta.
+    const subjectForQ = subjectTokens.slice();
+    const firstLower = subjectForQ[0].toLowerCase();
+    if (firstLower === "i") subjectForQ[0] = "I";
+    else if (VAR_LOWERABLE_STARTS.includes(firstLower)) subjectForQ[0] = firstLower;
+    const subjectQ = subjectForQ.join(" ");
+
+    const negWord = verbLower === "can" ? "cannot" : `${verbLower} not`;
+    const negative = `${subjectAffirm} ${negWord}${restStr ? " " + restStr : ""}.`;
+    const question = `${varCapitalize(verbLower)} ${subjectQ}${restStr ? " " + restStr : ""}?`;
+
+    const affirmClean = fullSentence.replace(/[.!?]+\s*$/, "");
+    const negCalque = verbLower === "can"
+      ? negative.replace("cannot", "can no")
+      : negative.replace(/\bnot\b/, "no");
+    const quDecoy2 = (!isModal && VAR_BE_SWAP[verbLower])
+      ? `${varCapitalize(VAR_BE_SWAP[verbLower])} ${subjectQ}${restStr ? " " + restStr : ""}?`
+      : `Do ${subjectQ} ${verbLower}${restStr ? " " + restStr : ""}?`;
+
+    return {
+      negative, negative_es: null,
+      question, question_es: null,
+      // Distractores deterministas (errores típicos), sin IA:
+      // 1) olvidar la negación por completo · 2) calco "no" del español
+      negative_distractors: [`${affirmClean}.`, negCalque],
+      // 1) agregar "?" sin invertir · 2) concordancia/auxiliar equivocado
+      question_distractors: [`${affirmClean}?`, quDecoy2]
+    };
+  }
+
+  // Arma la ronda con las frases del mazo que SÍ se pueden transformar con
+  // reglas; las demás quedan afuera (no es un fallo, es el alcance del modo).
+  function startVariationsRound(colId) {
     const queue = buildRound(colId);
     if (queue.length === 0) {
       const col = colId === "__fav__" ? null : findCollection(colId);
@@ -2932,24 +3034,15 @@
         true
       );
     }
-    showToast("🔄 Preparando variaciones con IA… puede tardar unos segundos", true);
     const prepared = [];
-    const CONCURRENCY = 3;
-    for (let i = 0; i < queue.length; i += CONCURRENCY) {
-      const chunk = queue.slice(i, i + CONCURRENCY);
-      const results = await Promise.all(chunk.map(async (item) => {
-        try {
-          return { ...item, variations: await fetchVariationsFor(item.colId, item.idx, item.s) };
-        } catch (e) {
-          return null; // se salta esta frase si la IA falla
-        }
-      }));
-      results.forEach((r) => { if (r) prepared.push(r); });
-    }
+    queue.forEach((item) => {
+      const v = tryLocalVariation(parseSentence(item.s).full);
+      if (v) prepared.push({ ...item, variations: v });
+    });
     if (!prepared.length) {
       showToast(
-        "⚠️ No se pudo conectar con el servidor de IA para Variaciones. Enciende " +
-        "\"Iniciar Joy English\" con tu API key de Gemini configurada e intenta de nuevo.",
+        "🔄 Este mazo todavía no tiene frases con \"to be\" o verbos modales " +
+        "(can/will/should…) para Variaciones — prueba con otro mazo.",
         true
       );
       return;
