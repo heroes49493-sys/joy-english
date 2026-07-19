@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Joy English ☀️ — Aprende inglés frase por frase</title>
   <meta name="theme-color" content="#facc15">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=35">
+  <link rel="stylesheet" href="css/styles.css?v=36">
 </head>
 <body>
 
@@ -129,19 +129,19 @@
 
   <!-- ============ PANTALLA DE JUEGO ============ -->
   <main id="screen-game" class="screen hidden">
-    <header class="game-header">
-      <button id="btn-exit" class="icon-btn" title="Salir">✕</button>
-      <div class="round-progress">
-        <div class="round-bar"><div id="round-fill" class="round-fill"></div></div>
-        <span id="round-count">1/10</span>
-      </div>
-      <div class="game-stats">
-        <span id="game-streak" class="game-streak" title="Racha de aciertos">🔥 0</span>
-        <span id="game-points" class="game-points">0 pts</span>
-      </div>
-    </header>
+    <div class="game-sticky-top">
+      <header class="game-header">
+        <button id="btn-exit" class="icon-btn" title="Salir">✕</button>
+        <div class="round-progress">
+          <div class="round-bar"><div id="round-fill" class="round-fill"></div></div>
+          <span id="round-count">1/10</span>
+        </div>
+        <div class="game-stats">
+          <span id="game-streak" class="game-streak" title="Racha de aciertos">🔥 0</span>
+          <span id="game-points" class="game-points">0 pts</span>
+        </div>
+      </header>
 
-    <section class="play-area">
       <div class="sentence-card" id="sentence-card">
         <div id="mode-badge" class="mode-badge"></div>
         <div id="sentence" class="sentence"></div>
@@ -156,7 +156,9 @@
           <span id="mastery-indicator" class="mastery"></span>
         </div>
       </div>
+    </div>
 
+    <section class="play-area">
       <div id="feedback" class="feedback"></div>
       <div id="word-match" class="word-match hidden"></div>
       <div id="help-panel" class="word-match help-panel hidden"></div>

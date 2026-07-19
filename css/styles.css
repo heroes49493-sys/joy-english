@@ -32,6 +32,7 @@ body {
   margin: 0 auto;
   padding: 24px 16px 48px;
   min-height: 100vh;
+  min-height: 100dvh; /* viewport dinámico: se ajusta cuando aparece el teclado */
   display: flex;
   flex-direction: column;
 }
@@ -290,6 +291,18 @@ body {
   align-items: center;
   gap: 14px;
   padding: 8px 0 20px;
+}
+
+/* La pregunta se queda fija arriba cuando el teclado empuja la página (Safari
+   mueve el scroll para que el input escrito quede visible sobre el teclado,
+   y sin esto la tarjeta de la oración se iba fuera de la pantalla). */
+.game-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 16px;
 }
 .screen-title { flex: 1; font-size: 1.2rem; }
 
@@ -857,7 +870,7 @@ body {
 }
 
 /* ================= v7: navegación inferior + Baúl ================= */
-.screen { padding-bottom: 96px; }
+.screen { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 
 .bottom-nav {
   position: fixed;
