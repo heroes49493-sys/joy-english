@@ -6992,5 +6992,301 @@ const COLLECTIONS = [
         gram: "'computer' = computadora."
       }
     ]
+  },
+  {
+    id: "class236",
+    name: "Clase 23.6 · Lista 18",
+    desc: "Vocabulario de tu clase: comportamiento, cuidar niños y dolencias leves (25 palabras)",
+    icon: "🏫",
+    sentences: [
+      {
+        t: "I {{have}} trouble understanding fast English.",
+        es: "Tengo dificultad para entender el inglés rápido.",
+        pos: "v",
+        gram: "'have trouble' = tener dificultad. Se usa 'have', no 'take' ni 'tener' literal: 'have trouble (doing something)'."
+      },
+      {
+        t: "She always {{has}} trouble waking up early.",
+        es: "A ella siempre le cuesta despertarse temprano.",
+        pos: "v",
+        gram: "'have trouble' = costar/tener dificultad. Con 'she' se conjuga 'has'."
+      },
+      {
+        t: "Don't {{get}} into trouble at school.",
+        es: "No te metas en problemas en la escuela.",
+        pos: "v",
+        gram: "'get into trouble' = meterse en problemas — distinto de 'have trouble' (dificultad): acá 'trouble' significa problemas/castigo, no dificultad."
+      },
+      {
+        t: "He {{got}} into trouble for being late.",
+        es: "Él se metió en problemas por llegar tarde.",
+        pos: "v",
+        gram: "'get into trouble' = meterse en problemas. Pasado irregular: get → got."
+      },
+      {
+        t: "The teacher will {{punish}} students who cheat.",
+        es: "El profesor va a castigar a los estudiantes que copien.",
+        pos: "v",
+        gram: "'punish' = castigar (verbo). El sustantivo relacionado es 'punishment' (castigo)."
+      },
+      {
+        t: "Parents shouldn't {{punish}} children too harshly.",
+        es: "Los padres no deberían castigar a los niños con demasiada dureza.",
+        pos: "v",
+        gram: "'punish' = castigar."
+      },
+      {
+        t: "His {{punishment}} was to stay after class.",
+        es: "Su castigo fue quedarse después de clase.",
+        pos: "n",
+        gram: "'punishment' = castigo (sustantivo). Verbo relacionado: 'to punish' = castigar."
+      },
+      {
+        t: "The {{punishment}} for lying was losing his phone.",
+        es: "El castigo por mentir fue perder su teléfono.",
+        pos: "n",
+        gram: "'punishment' = castigo."
+      },
+      {
+        t: "Today's {{lesson}} is about irregular verbs.",
+        es: "La lección de hoy es sobre verbos irregulares.",
+        pos: "n",
+        gram: "'lesson' = lección (de clase). No confundir con 'lesson' de tamaño ('lessen' = disminuir, se escribe distinto pero suena parecido)."
+      },
+      {
+        t: "I learned an important {{lesson}} from that mistake.",
+        es: "Aprendí una lección importante de ese error.",
+        pos: "n",
+        gram: "'lesson' = lección (también en sentido de 'enseñanza de vida', no solo de escuela)."
+      },
+      {
+        t: "His {{behavior}} in class has improved a lot.",
+        es: "Su comportamiento en clase mejoró mucho.",
+        pos: "n",
+        gram: "'behavior' = comportamiento. En inglés británico se escribe 'behaviour' (con 'u')."
+      },
+      {
+        t: "The teacher spoke to us about good {{behavior}}.",
+        es: "El profesor nos habló sobre el buen comportamiento.",
+        pos: "n",
+        gram: "'behavior' = comportamiento."
+      },
+      {
+        t: "It's {{rude}} to interrupt when someone is talking.",
+        es: "Es de mala educación interrumpir cuando alguien está hablando.",
+        pos: "adj",
+        gram: "'rude' = mal educado/grosero — FALSO AMIGO con 'rudo' en español (que sería 'tough' o 'rough' en inglés, no 'rude')."
+      },
+      {
+        t: "That was a very {{rude}} comment.",
+        es: "Ese fue un comentario muy mal educado.",
+        pos: "adj",
+        gram: "'rude' = mal educado. No significa 'rudo/tosco' (eso es 'rough' o 'tough')."
+      },
+      {
+        t: "If you miss class, you'll {{fall}} behind.",
+        es: "Si faltas a clase, te vas a quedar atrás.",
+        pos: "v",
+        gram: "'fall behind' = quedarse atrás. Lo opuesto es 'keep up (with)' = seguir el ritmo."
+      },
+      {
+        t: "He's starting to {{fall}} behind in math class.",
+        es: "Él está empezando a quedarse atrás en la clase de matemática.",
+        pos: "v",
+        gram: "'fall behind' = quedarse atrás (en un curso, un pago, un plan)."
+      },
+      {
+        t: "It's hard to {{keep}} up with all this homework.",
+        es: "Es difícil seguir el ritmo de toda esta tarea.",
+        pos: "v",
+        gram: "'keep up (with)' = seguir el ritmo (de). Lo opuesto de 'fall behind' (quedarse atrás)."
+      },
+      {
+        t: "She runs fast — I can't {{keep}} up with her.",
+        es: "Ella corre rápido — no puedo seguirle el ritmo.",
+        pos: "v",
+        gram: "'keep up with' = seguir el ritmo de alguien/algo."
+      },
+      {
+        t: "I {{accept}} your apology.",
+        es: "Acepto tus disculpas.",
+        pos: "v",
+        gram: "'accept' = aceptar. Cognado directo del español, pero cuidado con la pronunciación: /əkˈsɛpt/, no se pronuncia la 'c' como 'k' fuerte."
+      },
+      {
+        t: "She didn't {{accept}} the job offer.",
+        es: "Ella no aceptó la oferta de trabajo.",
+        pos: "v",
+        gram: "'accept' = aceptar."
+      },
+      {
+        t: "It's hard to {{pronounce}} some English words.",
+        es: "Es difícil pronunciar algunas palabras en inglés.",
+        pos: "v",
+        gram: "'pronounce' = pronunciar. El sustantivo es 'pronunciation' (pronunciación) — nota que pierde la 'o' antes de 'unciation'."
+      },
+      {
+        t: "Can you {{pronounce}} this word for me?",
+        es: "¿Puedes pronunciar esta palabra por mí?",
+        pos: "v",
+        gram: "'pronounce' = pronunciar."
+      },
+      {
+        t: "She knows how to {{deal}} with difficult students.",
+        es: "Ella sabe cómo tratar a estudiantes difíciles.",
+        pos: "v",
+        gram: "'deal with' = tratar/lidiar con (un problema, una persona). También se dice 'to handle' con el mismo sentido."
+      },
+      {
+        t: "I don't know how to {{deal}} with this problem.",
+        es: "No sé cómo tratar este problema.",
+        pos: "v",
+        gram: "'deal with' = tratar/manejar (una situación). Pasado irregular: deal-dealt-dealt."
+      },
+      {
+        t: "This is, by {{far}}, the best pizza in town.",
+        es: "Esta es, de lejos, la mejor pizza de la ciudad.",
+        pos: "adv",
+        gram: "'by far' = de lejos/con diferencia, para superlativos enfáticos. Otra forma de decir lo mismo: 'hands down'."
+      },
+      {
+        t: "She is, {{hands}} down, the best teacher I've had.",
+        es: "Ella es, de calle, la mejor profesora que tuve.",
+        pos: "n",
+        gram: "'hands down' = de calle/sin dudas, para enfatizar un superlativo — mismo sentido que 'by far'."
+      },
+      {
+        t: "I {{babysit}} my neighbor's kids on weekends.",
+        es: "Cuido a los niños de mi vecina los fines de semana.",
+        pos: "v",
+        gram: "'babysit' = cuidar niños (verbo, palabra compuesta: baby + sit). El sustantivo es 'babysitter' (niñera/o)."
+      },
+      {
+        t: "She used to {{babysit}} for extra money.",
+        es: "Ella solía cuidar niños para ganar dinero extra.",
+        pos: "v",
+        gram: "'babysit' = cuidar niños. Pasado: 'babysat' (no 'babysitted')."
+      },
+      {
+        t: "Be careful, you might {{tear}} the paper.",
+        es: "Ten cuidado, puede que rasgues el papel.",
+        pos: "v",
+        gram: "'tear' (rasgar) se pronuncia /tɛər/, rima con 'hair'. Ojo: es distinta palabra de 'tears' (lágrimas), que rima con 'here'."
+      },
+      {
+        t: "He accidentally {{tore}} his shirt.",
+        es: "Él rasgó su camisa sin querer.",
+        pos: "v",
+        gram: "'tear' (rasgar) es irregular: tear-tore-torn."
+      },
+      {
+        t: "She had {{tears}} in her eyes during the movie.",
+        es: "Ella tenía lágrimas en los ojos durante la película.",
+        pos: "n",
+        gram: "'tears' (lágrimas) se pronuncia /tɪərz/, rima con 'here' — distinto de 'tear' (rasgar, rima con 'hair'). Se escriben parecido pero no son la misma palabra."
+      },
+      {
+        t: "He wiped away his {{tears}}.",
+        es: "Él se secó las lágrimas.",
+        pos: "n",
+        gram: "'tears' = lágrimas."
+      },
+      {
+        t: "She tore {{out}} the last page of the notebook.",
+        es: "Ella arrancó la última página del cuaderno.",
+        pos: "prep",
+        gram: "'tear out' = arrancar (una página, una hoja) — el 'out' es lo que cambia el sentido de simplemente 'rasgar' a 'arrancar/quitar'."
+      },
+      {
+        t: "He tore the receipt {{out}} of his wallet.",
+        es: "Él arrancó el recibo de su billetera.",
+        pos: "prep",
+        gram: "'tear out' = arrancar algo de un lugar."
+      },
+      {
+        t: "We had to change the plan on the {{fly}}.",
+        es: "Tuvimos que cambiar el plan sobre la marcha.",
+        pos: "n",
+        gram: "'on the fly' = sobre la marcha/improvisando, sin planearlo antes. No tiene relación con 'fly' de volar/mosca en este uso."
+      },
+      {
+        t: "The chef made a new dish on the {{fly}}.",
+        es: "El chef inventó un plato nuevo sobre la marcha.",
+        pos: "n",
+        gram: "'on the fly' = sobre la marcha, improvisando."
+      },
+      {
+        t: "I have an {{earache}} and can't sleep.",
+        es: "Tengo dolor de oídos y no puedo dormir.",
+        pos: "n",
+        gram: "'earache' = dolor de oídos (palabra compuesta: ear + ache). Igual patrón que 'headache' (dolor de cabeza) y 'stomachache' (dolor de estómago)."
+      },
+      {
+        t: "This {{earache}} has lasted three days.",
+        es: "Este dolor de oídos ha durado tres días.",
+        pos: "n",
+        gram: "'earache' = dolor de oídos."
+      },
+      {
+        t: "He started to {{cough}} during the meeting.",
+        es: "Él empezó a toser durante la reunión.",
+        pos: "v",
+        gram: "'cough' se pronuncia /kɔːf/ — el 'gh' suena como 'f', no se pronuncia como 'g'."
+      },
+      {
+        t: "She has a {{cough}} that won't go away.",
+        es: "Ella tiene una tos que no se le va.",
+        pos: "n",
+        gram: "'cough' funciona como verbo (toser) y como sustantivo (la tos) — misma palabra para los dos."
+      },
+      {
+        t: "I'm too {{hoarse}} to sing today.",
+        es: "Estoy demasiado afónico para cantar hoy.",
+        pos: "adj",
+        gram: "'hoarse' = afónico/ronco. Se pronuncia exactamente igual que 'horse' (caballo) — son homófonos, hay que distinguirlos por el contexto."
+      },
+      {
+        t: "He sounded hoarse after {{shouting}} at the game.",
+        es: "Él sonaba afónico después de gritar en el partido.",
+        pos: "v",
+        gram: "'hoarse' = afónico. Se pone así típicamente después de gritar mucho o de un resfriado."
+      },
+      {
+        t: "Step on the {{scale}} to check your weight.",
+        es: "Súbete a la báscula para revisar tu peso.",
+        pos: "n",
+        gram: "'scale' = báscula/balanza en este sentido. La misma palabra también significa 'escala' (de un mapa, de música) según el contexto."
+      },
+      {
+        t: "The {{scale}} at the gym is broken.",
+        es: "La báscula del gimnasio está rota.",
+        pos: "n",
+        gram: "'scale' = báscula."
+      },
+      {
+        t: "How much do you {{weigh}}?",
+        es: "¿Cuánto pesas?",
+        pos: "v",
+        gram: "'weigh' = pesar (verbo). El sustantivo relacionado es 'weight' (peso) — ojo con la ortografía distinta: weigh vs. weight."
+      },
+      {
+        t: "This bag {{weighs}} more than I expected.",
+        es: "Esta bolsa pesa más de lo que esperaba.",
+        pos: "v",
+        gram: "'weigh' = pesar. Con 'it/this/she/he' se conjuga 'weighs'."
+      },
+      {
+        t: "I don't want to {{gain}} weight during the holidays.",
+        es: "No quiero engordar durante las fiestas.",
+        pos: "v",
+        gram: "'gain weight' = subir de peso/engordar — se usa 'gain', no 'win' (que también significa ganar, pero de premios/competencias)."
+      },
+      {
+        t: "He {{gained}} five pounds last month.",
+        es: "Él subió cinco libras el mes pasado.",
+        pos: "v",
+        gram: "'gain weight' = engordar. Lo opuesto es 'to lose weight' (adelgazar)."
+      }
+    ]
   }
 ];
