@@ -571,6 +571,32 @@
       if (state.streak.freezes > before) showToast("🧊 ¡Ganaste un congelador de racha!");
     }
     if (state.streak.count > state.records.bestDays) state.records.bestDays = state.streak.count;
+
+    // 🎉 Celebración de racha: una vez por día, en la PRIMERA actividad del día
+    // (este punto solo se alcanza cuando lastDate acaba de cambiar).
+    showStreakCelebration(state.streak.count);
+  }
+
+  // Pantalla completa de festejo por la racha de días (pedido del usuario:
+  // "una animación por cada racha que haga de días"). Hitos (semana/mes/100)
+  // llevan una etiqueta extra. Se cierra sola o con un toque.
+  function showStreakCelebration(days) {
+    const overlay = document.createElement("div");
+    overlay.className = "streak-celebration";
+    const milestone =
+      days % 100 === 0 ? "🏆 ¡¡100 DÍAS!!" :
+      days % 30 === 0 ? "🏆 ¡Un mes entero!" :
+      days % 7 === 0 ? "🎉 ¡Semana completa!" : "";
+    overlay.innerHTML = `
+      <div class="streak-flame">🔥</div>
+      <div class="streak-days">${days}</div>
+      <div class="streak-label">día${days === 1 ? "" : "s"} seguido${days === 1 ? "" : "s"} practicando</div>
+      ${milestone ? `<div class="streak-milestone">${milestone}</div>` : ""}`;
+    document.body.appendChild(overlay);
+    confetti();
+    playFanfare();
+    overlay.addEventListener("click", () => overlay.remove());
+    setTimeout(() => overlay.remove(), 2600);
   }
 
   // ---------- ⏱ Formato de tiempo de práctica ----------
@@ -863,6 +889,9 @@
     ["home", "game", "results", "stats", "decks", "deck", "vault"].forEach((s) => {
       $(`screen-${s}`).classList.toggle("hidden", s !== name);
     });
+    // Altura fijada por el handler del teclado (visualViewport): limpiar al
+    // cambiar de pantalla, para no arrastrar un alto viejo la próxima ronda.
+    $("screen-game").style.height = "";
     // La barra inferior solo se ve en las pantallas principales
     const nav = $("bottom-nav");
     nav.classList.toggle("hidden", !(name in NAV_FOR_SCREEN));
@@ -3403,6 +3432,34 @@
   $("nav-decks").addEventListener("click", renderDecksScreen);
   $("nav-vault").addEventListener("click", renderVault);
   $("nav-stats").addEventListener("click", renderStats);
+
+  // ---------- 📱 Teclado del teléfono: la pregunta SIEMPRE arriba ----------
+  // Aunque #screen-game tiene overflow:hidden (v43), iOS igual "empuja" (pan)
+  // la página entera para acomodar el teclado. Esto lo cancela activamente:
+  // cuando el teclado achica el viewport VISIBLE, la pantalla de juego se
+  // redimensiona a esa altura (así .play-area scrollea por dentro y el campo de
+  // escritura queda a la vista) y la ventana se re-ancla arriba (scroll 0).
+  // Al cerrarse el teclado, el mismo handler restaura todo.
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    let vvRaf = 0;
+    const pinGameScreen = () => {
+      cancelAnimationFrame(vvRaf);
+      vvRaf = requestAnimationFrame(() => {
+        const gameEl = $("screen-game");
+        if (gameEl.classList.contains("hidden")) { gameEl.style.height = ""; return; }
+        const keyboardOpen = vv.height < window.innerHeight - 60;
+        gameEl.style.height = keyboardOpen ? `${vv.height}px` : "";
+        if (window.scrollY !== 0 || vv.offsetTop > 0) window.scrollTo(0, 0);
+        if (keyboardOpen && document.activeElement === $("answer-input")) {
+          // que el campo quede visible dentro del área scrolleable interna
+          $("answer-input").scrollIntoView({ block: "nearest" });
+        }
+      });
+    };
+    vv.addEventListener("resize", pinGameScreen);
+    vv.addEventListener("scroll", pinGameScreen);
+  }
 
   // ---------- ⏱ Tiempo de práctica ----------
   // Suma 1 segundo al día actual mientras la pestaña está visible Y estás
