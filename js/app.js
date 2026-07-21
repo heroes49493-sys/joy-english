@@ -1055,22 +1055,43 @@
     btn.classList.toggle("faved", faved);
   }
 
+  // 📖 Diccionario al tocar: envuelve cada palabra en un span tocable
+  // (data-word = la palabra "limpia", sin puntuación) dentro del texto dado.
+  // Los espacios quedan como texto plano — no hace falta envolverlos.
+  function appendTappableText(el, text) {
+    text.split(/(\s+)/).forEach((part) => {
+      const core = part.match(/[A-Za-z']+/);
+      if (!core) { el.appendChild(document.createTextNode(part)); return; }
+      const span = document.createElement("span");
+      span.className = "tap-word";
+      span.textContent = part;
+      span.dataset.word = core[0];
+      el.appendChild(span);
+    });
+  }
+
   function renderBlankSentence() {
     const { before, after, answer } = game.current.parsed;
     const el = $("sentence");
     el.classList.remove("dictation");
     el.innerHTML = "";
+    appendTappableText(el, before);
     const blank = document.createElement("span");
     blank.className = "blank";
     blank.id = "blank";
     blank.textContent = "_".repeat(Math.max(4, answer.length));
-    el.append(document.createTextNode(before), blank, document.createTextNode(after));
+    el.appendChild(blank);
+    appendTappableText(el, after);
   }
 
-  function renderPromptSentence(text) {
+  // tappable=true cuando el texto es una oración en INGLÉS real (se puede
+  // tocar palabra por palabra); false para instrucciones en español.
+  function renderPromptSentence(text, tappable = false) {
     const el = $("sentence");
     el.classList.add("dictation");
-    el.textContent = text;
+    el.innerHTML = "";
+    if (tappable) appendTappableText(el, text);
+    else el.textContent = text;
   }
 
   function showQuestion() {
@@ -1140,6 +1161,7 @@
     $("feedback").className = "feedback";
     $("word-match").classList.add("hidden");
     $("help-panel").classList.add("hidden");
+    $("word-popup").classList.add("hidden");
     $("typing-live").classList.add("hidden");
     $("typing-live").innerHTML = "";
     $("btn-next").classList.add("hidden");
@@ -1437,7 +1459,7 @@
       const type = game.current.varType;
       const v = game.current.variations;
       const correctText = type === "negative" ? v.negative : v.question;
-      renderPromptSentence(correctText);
+      renderPromptSentence(correctText, true);
       $("sentence").classList.toggle("filled-correct", isCorrect);
       $("sentence").classList.toggle("filled-wrong", !isCorrect);
       // No hay traducción de la variación (se genera con reglas, no con IA) — se
@@ -1451,7 +1473,9 @@
       blank.className = `blank ${isCorrect ? "filled-correct" : "filled-wrong"}`;
       blank.id = "blank";
       blank.textContent = answer;
-      sentenceEl.append(document.createTextNode(before), blank, document.createTextNode(after));
+      appendTappableText(sentenceEl, before);
+      sentenceEl.appendChild(blank);
+      appendTappableText(sentenceEl, after);
       $("translation").textContent = game.current.s.es;
     }
 
@@ -3318,6 +3342,60 @@
     if (!res.ok) throw new Error(data.error || "Sin explicación.");
     return data.resultado;
   }
+
+  // ---------- 📖 Diccionario al tocar una palabra ----------
+  // En memoria, no persistido: es barato de volver a pedir y así no infla el
+  // progreso guardado con miles de palabras sueltas.
+  const wordDefCache = {};
+
+  async function showWordPopup(span) {
+    const word = span.dataset.word;
+    if (!word) return;
+    const popup = $("word-popup");
+    popup.classList.remove("hidden");
+    const key = word.toLowerCase();
+    if (wordDefCache[key]) { renderWordPopup(word, wordDefCache[key]); return; }
+    popup.innerHTML = `<div class="word-popup-loading">🔎 Buscando “${escapeHtml(word)}”…</div>`;
+    try {
+      const sentence = game.current?.parsed?.full || $("sentence").textContent;
+      const res = await fetch(`${AI_SERVER}/api/define-word`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word, sentence })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Sin definición.");
+      wordDefCache[key] = data.resultado;
+      renderWordPopup(word, data.resultado);
+    } catch (err) {
+      popup.innerHTML = `<div class="word-popup-loading">⚠️ ${escapeHtml(
+        err.message === "Failed to fetch"
+          ? "Enciende el servidor de IA (\"Iniciar Joy English\") para usar el diccionario."
+          : err.message
+      )}</div>`;
+    }
+  }
+
+  function renderWordPopup(word, r) {
+    const popup = $("word-popup");
+    popup.classList.remove("hidden");
+    popup.innerHTML = `
+      <div class="word-popup-top">
+        <span class="word-popup-word">${escapeHtml(word)} <span class="word-popup-pos">${escapeHtml(r.tipo || "")}</span></span>
+        <button type="button" class="word-popup-close" title="Cerrar">✕</button>
+      </div>
+      <div class="word-popup-tr">${escapeHtml(r.traduccion)}</div>
+      <div class="word-popup-def">${escapeHtml(r.definicion)}</div>`;
+    popup.querySelector(".word-popup-close").addEventListener("click", () => popup.classList.add("hidden"));
+  }
+
+  // Delegado en document: las palabras tocables se recrean en cada pregunta
+  document.addEventListener("click", (e) => {
+    const span = e.target.closest(".tap-word");
+    if (span) { showWordPopup(span); return; }
+    // Tocar afuera de una palabra y afuera del popup lo cierra
+    if (!e.target.closest("#word-popup")) $("word-popup")?.classList.add("hidden");
+  });
 
   function checkDrill() {
     if (drill.awaitingNext) { nextDrillItem(); return; }

@@ -373,6 +373,41 @@ body {
 .sentence { font-size: 1.5rem; line-height: 1.6; font-weight: 500; }
 .sentence.dictation { color: var(--text-dim); font-size: 1.15rem; font-style: italic; }
 
+/* 📖 Diccionario al tocar: cada palabra de la oración es tocable */
+.tap-word {
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 0 1px;
+  transition: background-color .15s;
+}
+.tap-word:hover, .tap-word:active { background-color: rgba(250, 204, 21, .22); }
+
+.word-popup {
+  margin-top: 14px;
+  background: rgba(250, 204, 21, .07);
+  border: 1px solid rgba(250, 204, 21, .35);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: .9rem;
+  line-height: 1.5;
+}
+.word-popup-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.word-popup-word { font-weight: 800; color: var(--accent); font-size: 1.05rem; }
+.word-popup-pos { color: var(--text-dim); font-size: .78rem; }
+.word-popup-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.word-popup-tr { color: var(--green); font-weight: 700; margin-top: 6px; }
+.word-popup-def { color: var(--text); margin-top: 4px; }
+.word-popup-loading { color: var(--text-dim); }
+
 .blank {
   display: inline-block;
   min-width: 70px;
@@ -510,7 +545,21 @@ body {
 #answer-input.ok { border-color: var(--green); }
 #answer-input.bad { border-color: var(--red); }
 
-.input-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+/* "Comprobar"/"No sé" quedan pegados justo arriba del teclado (pedido del
+   usuario, dibujado a mano sobre una captura): al abrirse el teclado,
+   .play-area se achica al alto visible (ver el handler de visualViewport en
+   app.js) y esto se pega al FONDO de esa zona visible — que es, en los
+   hechos, el borde superior del teclado. */
+.input-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+}
 
 /* Modo hablar */
 .speak-area { display: flex; flex-direction: column; gap: 12px; align-items: center; }
