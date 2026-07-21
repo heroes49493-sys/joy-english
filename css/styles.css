@@ -25,6 +25,12 @@ html, body {
      (el meta viewport ya pone user-scalable=no; esto es refuerzo para
      navegadores que lo ignoran, típicamente en doble-tap sobre botones). */
   touch-action: manipulation;
+  /* iOS muestra el fondo de <html> (blanco por defecto) al "rebotar" arriba/
+     abajo con overscroll — eso es el blanco que aparecía junto al reloj/
+     batería al deslizar. Con fondo negro en <html> Y sin el rebote (que
+     además así deja de sentirse como página web), queda todo negro. */
+  background: #0a0a0a;
+  overscroll-behavior-y: none;
 }
 
 body {
