@@ -571,6 +571,13 @@ body {
   padding: 10px 0 max(10px, env(safe-area-inset-bottom));
 }
 
+/* Solo en teléfono (touch, sin mouse): "No sé" y "Comprobar" se separan a
+   las esquinas del teclado en vez de quedar juntos en el centro — pedido
+   explícito del usuario. En Mac (mouse/trackpad) queda igual que siempre. */
+@media (hover: none) and (pointer: coarse) {
+  .input-buttons { justify-content: space-between; }
+}
+
 /* Modo hablar */
 .speak-area { display: flex; flex-direction: column; gap: 12px; align-items: center; }
 .speak-instructions { color: var(--text-dim); font-size: .9rem; text-align: center; }
