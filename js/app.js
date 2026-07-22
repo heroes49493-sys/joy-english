@@ -3540,6 +3540,18 @@
     vv.addEventListener("scroll", pinGameScreen);
   }
 
+  // En la PWA instalada (modo standalone), iOS agrega SU PROPIA barra sobre
+  // el teclado (flechas ‹ › + botón "Listo" con un check) además de la barra
+  // de sugerencias — las dos se superponen con "No sé"/"Comprobar" y comen el
+  // espacio pedido por el usuario. Truco conocido en apps WKWebView (Ionic/
+  // Capacitor lo usan igual): asignar `_inputAccessoryView = null` al enfocar
+  // hace que iOS no dibuje esa barra nativa, dejando el lugar libre para
+  // nuestros propios botones.
+  ["answer-input", "drill-input"].forEach((id) => {
+    const el = $(id);
+    if (el) el.addEventListener("focus", () => { el._inputAccessoryView = null; });
+  });
+
   // ---------- ⏱ Tiempo de práctica ----------
   // Suma 1 segundo al día actual mientras la pestaña está visible Y estás
   // practicando de verdad: dentro de una ronda o hablando en el Baúl.

@@ -174,7 +174,7 @@
       <div id="input-area" class="input-area hidden">
         <div id="typing-live" class="word-match typing-live hidden"></div>
         <input id="answer-input" type="text" autocomplete="off" autocapitalize="off"
-               spellcheck="false" placeholder="Escribe la palabra que falta…">
+               autocorrect="off" spellcheck="false" placeholder="Escribe la palabra que falta…">
         <div class="input-buttons">
           <button id="btn-giveup" class="btn secondary">No sé</button>
           <button id="btn-check" class="btn primary">Comprobar</button>
@@ -396,7 +396,7 @@
         <div id="drill-why" class="drill-why hidden"></div>
         <div id="drill-live" class="word-match typing-live hidden"></div>
         <input id="drill-input" type="text" autocomplete="off" autocapitalize="off"
-               spellcheck="false" placeholder="Escríbelo bien en inglés…">
+               autocorrect="off" spellcheck="false" placeholder="Escríbelo bien en inglés…">
         <div class="input-buttons">
           <button id="btn-drill-say" class="btn secondary">🔊 Oír</button>
           <button id="btn-drill-check" class="btn primary">Comprobar</button>
@@ -611,7 +611,7 @@
   </nav>
 
   <script src="js/data.js?v=32"></script>
-  <script src="js/app.js?v=42"></script>
+  <script src="js/app.js?v=43"></script>
   <script type="module" src="js/firebase-sync.js?v=2"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)
