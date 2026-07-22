@@ -3519,6 +3519,18 @@
   // redimensiona a esa altura (así .play-area scrollea por dentro y el campo de
   // escritura queda a la vista) y la ventana se re-ancla arriba (scroll 0).
   // Al cerrarse el teclado, el mismo handler restaura todo.
+  //
+  // En la PWA instalada (standalone), iOS dibuja SU PROPIA barra de
+  // "Autocompletar" (flechas ↑↓ + botón "Listo") flotando ENCIMA del
+  // contenido, sin restarle esa altura a `visualViewport` — por eso, sin este
+  // ajuste, esa barra tapa los botones "No sé"/"Comprobar" aunque el cálculo
+  // de altura sea correcto (confirmado con capturas reales del usuario; el
+  // truco `_inputAccessoryView = null` que se probó antes NO funciona en
+  // standalone, solo sirve en apps nativas tipo Cordova/Capacitor). La única
+  // forma confiable es restarle ese espacio a mano.
+  const IOS_STANDALONE = window.navigator.standalone === true;
+  const AUTOFILL_BAR_HEIGHT = 46; // alto típico del toolbar nativo de iOS
+
   if (window.visualViewport) {
     const vv = window.visualViewport;
     let vvRaf = 0;
@@ -3528,7 +3540,8 @@
         const gameEl = $("screen-game");
         if (gameEl.classList.contains("hidden")) { gameEl.style.height = ""; return; }
         const keyboardOpen = vv.height < window.innerHeight - 60;
-        gameEl.style.height = keyboardOpen ? `${vv.height}px` : "";
+        const extra = keyboardOpen && IOS_STANDALONE ? AUTOFILL_BAR_HEIGHT : 0;
+        gameEl.style.height = keyboardOpen ? `${vv.height - extra}px` : "";
         if (window.scrollY !== 0 || vv.offsetTop > 0) window.scrollTo(0, 0);
         if (keyboardOpen && document.activeElement === $("answer-input")) {
           // que el campo quede visible dentro del área scrolleable interna
@@ -3539,18 +3552,6 @@
     vv.addEventListener("resize", pinGameScreen);
     vv.addEventListener("scroll", pinGameScreen);
   }
-
-  // En la PWA instalada (modo standalone), iOS agrega SU PROPIA barra sobre
-  // el teclado (flechas ‹ › + botón "Listo" con un check) además de la barra
-  // de sugerencias — las dos se superponen con "No sé"/"Comprobar" y comen el
-  // espacio pedido por el usuario. Truco conocido en apps WKWebView (Ionic/
-  // Capacitor lo usan igual): asignar `_inputAccessoryView = null` al enfocar
-  // hace que iOS no dibuje esa barra nativa, dejando el lugar libre para
-  // nuestros propios botones.
-  ["answer-input", "drill-input"].forEach((id) => {
-    const el = $(id);
-    if (el) el.addEventListener("focus", () => { el._inputAccessoryView = null; });
-  });
 
   // ---------- ⏱ Tiempo de práctica ----------
   // Suma 1 segundo al día actual mientras la pestaña está visible Y estás
