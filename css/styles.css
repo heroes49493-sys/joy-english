@@ -77,6 +77,10 @@ body {
 .top-actions { display: flex; gap: 8px; }
 .top-actions .icon-btn { width: 42px; height: 42px; font-size: 1.15rem; }
 
+/* ☁️ Iniciar sesión con Google (sincronizar progreso) */
+.google-signin { padding: 0; overflow: hidden; }
+.google-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

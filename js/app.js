@@ -210,6 +210,7 @@
 
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    scheduleCloudSave();
   }
 
   function todayHistory() {
@@ -3554,6 +3555,80 @@
     state.history[t] = h;
     if (++practiceTicks % 15 === 0) save();
   }, 1000);
+
+  // ---------- ☁️ Sincronizar progreso con Google (Firebase, opcional) ----------
+  // js/firebase-sync.js (módulo aparte, ver ese archivo) expone window.JoyCloud
+  // cuando termina de cargar. Si no carga (sin internet, CDN bloqueado, etc.)
+  // el botón queda oculto y la app sigue funcionando 100% local, como siempre.
+  let cloudUser = null;
+  let cloudSaveTimer = null;
+
+  function scheduleCloudSave() {
+    if (!cloudUser || !window.JoyCloud) return;
+    clearTimeout(cloudSaveTimer);
+    // Se agrupa en una sola escritura cada pocos segundos: save() se llama
+    // muy seguido (cada respuesta, cada ajuste) y no hace falta subir TODO
+    // eso a la nube al instante.
+    cloudSaveTimer = setTimeout(() => {
+      window.JoyCloud.saveState(cloudUser.uid, state).catch((e) => {
+        console.warn("Joy English — no se pudo guardar en la nube:", e);
+      });
+    }, 3000);
+  }
+
+  function renderGoogleSigninButton() {
+    const btn = $("btn-google-signin");
+    if (!btn) return;
+    if (cloudUser) {
+      btn.title = `${cloudUser.displayName || cloudUser.email} · Tocar para cerrar sesión`;
+      btn.innerHTML = cloudUser.photoURL
+        ? `<img src="${cloudUser.photoURL}" alt="" class="google-avatar">`
+        : "☁️";
+    } else {
+      btn.title = "Iniciar sesión con Google (sincronizar tu progreso)";
+      btn.innerHTML = `<span id="google-signin-icon">🔐</span>`;
+    }
+  }
+
+  async function handleGoogleAuthChange(user) {
+    cloudUser = user;
+    renderGoogleSigninButton();
+    if (!user) return;
+    try {
+      const cloudState = await window.JoyCloud.loadState(user.uid);
+      if (cloudState) {
+        // Ya había progreso guardado en la nube (ej. entraste desde otro
+        // dispositivo antes) — ese es el que manda.
+        state = normalizeState(cloudState);
+        save();
+        renderHome();
+        showToast(`☁️ Progreso cargado — ¡hola, ${user.displayName?.split(" ")[0] || "de nuevo"}!`, true);
+      } else {
+        // Primera vez con esta cuenta: sube lo que ya tenías en este navegador.
+        await window.JoyCloud.saveState(user.uid, state);
+        showToast("☁️ Tu progreso ahora se sincroniza con tu cuenta de Google", true);
+      }
+    } catch (e) {
+      console.warn("Joy English — error sincronizando con la nube:", e);
+      showToast("⚠️ No se pudo sincronizar con la nube. Sigue guardado en este navegador.", true);
+    }
+  }
+
+  window.addEventListener("joycloud-ready", () => {
+    $("btn-google-signin")?.classList.remove("hidden");
+    window.JoyCloud.onAuthChange(handleGoogleAuthChange);
+  });
+
+  $("btn-google-signin").addEventListener("click", () => {
+    if (!window.JoyCloud) return;
+    if (cloudUser) {
+      if (confirm("¿Cerrar sesión de Google? Tu progreso sigue guardado en este navegador.")) {
+        window.JoyCloud.signOutUser();
+      }
+    } else {
+      window.JoyCloud.signIn();
+    }
+  });
 
   // ---------- Inicio ----------
   renderHome();

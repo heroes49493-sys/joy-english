@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=41">
+  <link rel="stylesheet" href="css/styles.css?v=42">
 </head>
 <body>
 
@@ -26,6 +26,9 @@
         </div>
       </div>
       <nav class="top-actions">
+        <button id="btn-google-signin" class="icon-btn google-signin hidden" title="Iniciar sesión con Google">
+          <span id="google-signin-icon">🔐</span>
+        </button>
         <button id="btn-settings" class="icon-btn" title="Ajustes">⚙️</button>
       </nav>
     </header>
@@ -608,7 +611,8 @@
   </nav>
 
   <script src="js/data.js?v=32"></script>
-  <script src="js/app.js?v=40"></script>
+  <script src="js/app.js?v=41"></script>
+  <script type="module" src="js/firebase-sync.js?v=1"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)
     // y baja la última versión cuando el servidor está encendido.
