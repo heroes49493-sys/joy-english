@@ -14,7 +14,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult,
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
   signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
@@ -36,11 +36,26 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// signInWithRedirect (no popup): los popups son poco confiables en la PWA
-// instalada en el teléfono (modo standalone) — el redirect siempre funciona.
+// Intenta popup primero (da un error claro e inmediato si algo falla: dominio
+// no autorizado, popup bloqueado, etc.) y si el navegador no lo soporta bien
+// (típico en PWA instalada / modo standalone en iOS), cae a signInWithRedirect.
 window.JoyCloud = {
-  signIn() {
-    return signInWithRedirect(auth, provider);
+  async signIn() {
+    try {
+      return await signInWithPopup(auth, provider);
+    } catch (err) {
+      // El usuario cerró el popup o lo canceló a propósito: no es un error real.
+      if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+        return null;
+      }
+      // El navegador no soporta popups bien (típico en PWA instalada/standalone
+      // en iOS) o el popup fue bloqueado: caer a redirect.
+      if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") {
+        console.warn("Joy English — popup falló, probando redirect:", err.code);
+        return signInWithRedirect(auth, provider);
+      }
+      throw err;
+    }
   },
   signOutUser() {
     return signOut(auth);

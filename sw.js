@@ -2,7 +2,7 @@
 // Estrategia "red primero, caché de respaldo":
 //  - Con el servidor encendido, SIEMPRE baja la última versión (actualizas sin reinstalar).
 //  - Sin servidor (offline), la app sigue funcionando desde la caché.
-const CACHE = "joy-english-v49";
+const CACHE = "joy-english-v50";
 
 // ⚠️ Mantener las ?v= de esta lista IGUALES a las de index.html en cada versión
 // (quedó olvidada en v23 durante varias versiones y la precarga guardaba URLs viejas).
@@ -11,8 +11,8 @@ const ASSETS = [
   "./index.html",
   "./css/styles.css?v=42",
   "./js/data.js?v=32",
-  "./js/app.js?v=41",
-  "./js/firebase-sync.js?v=1",
+  "./js/app.js?v=42",
+  "./js/firebase-sync.js?v=2",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

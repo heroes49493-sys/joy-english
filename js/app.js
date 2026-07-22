@@ -3614,19 +3614,39 @@
     }
   }
 
+  let cloudReady = false;
   window.addEventListener("joycloud-ready", () => {
+    cloudReady = true;
     $("btn-google-signin")?.classList.remove("hidden");
     window.JoyCloud.onAuthChange(handleGoogleAuthChange);
   });
+  // Si a los 4s no llegó "joycloud-ready" (sin internet, CDN de Firebase
+  // bloqueado, etc.) igual mostramos el botón: al tocarlo se explica por qué
+  // no funciona, en vez de quedar invisible y parecer que la app está rota.
+  setTimeout(() => {
+    if (!cloudReady) $("btn-google-signin")?.classList.remove("hidden");
+  }, 4000);
 
-  $("btn-google-signin").addEventListener("click", () => {
-    if (!window.JoyCloud) return;
+  $("btn-google-signin").addEventListener("click", async () => {
+    if (!cloudReady || !window.JoyCloud) {
+      showToast("⚠️ La sincronización con Google no cargó. Revisa tu conexión y vuelve a intentar.", true);
+      return;
+    }
     if (cloudUser) {
       if (confirm("¿Cerrar sesión de Google? Tu progreso sigue guardado en este navegador.")) {
         window.JoyCloud.signOutUser();
       }
-    } else {
-      window.JoyCloud.signIn();
+      return;
+    }
+    const btn = $("btn-google-signin");
+    btn.disabled = true;
+    try {
+      await window.JoyCloud.signIn();
+    } catch (e) {
+      console.warn("Joy English — error al iniciar sesión con Google:", e);
+      showToast(`⚠️ No se pudo iniciar sesión (${e.code || e.message || "error desconocido"})`, true);
+    } finally {
+      btn.disabled = false;
     }
   });
 
