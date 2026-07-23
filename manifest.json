@@ -1,6 +1,6 @@
 {
-  "name": "Joy English",
-  "short_name": "Joy English",
+  "name": "English Plus",
+  "short_name": "English Plus",
   "description": "Aprende inglés frase por frase, hasta la fluidez. 100% gratis.",
   "lang": "es",
   "start_url": "./",
@@ -31,8 +31,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Hablar libre (Baúl)",
-      "short_name": "Baúl",
+      "name": "Hablar libre (Talk)",
+      "short_name": "Talk",
       "url": "./#vault",
       "icons": [
         {

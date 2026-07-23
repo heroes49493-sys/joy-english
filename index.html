@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Joy English ☀️ — Aprende inglés frase por frase</title>
+  <title>English Plus ☀️ — Aprende inglés frase por frase</title>
   <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Joy English">
+  <meta name="apple-mobile-web-app-title" content="English Plus">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=43">
+  <link rel="stylesheet" href="css/styles.css?v=44">
 </head>
 <body>
 
@@ -21,27 +21,14 @@
       <div class="brand">
         <span class="logo-sun">☀️</span>
         <div>
-          <div class="logo">Joy <span>English</span></div>
+          <div class="logo">English <span>Plus</span></div>
           <div class="tagline">Frase a frase, hasta la fluidez</div>
         </div>
       </div>
       <nav class="top-actions">
-        <button id="btn-google-signin" class="icon-btn google-signin hidden" title="Iniciar sesión con Google">
-          <span id="google-signin-icon">🔐</span>
-        </button>
         <button id="btn-settings" class="icon-btn" title="Ajustes">⚙️</button>
       </nav>
     </header>
-
-    <section id="welcome-card" class="vault-block hidden">
-      <h3>👋 ¡Bienvenido a Joy English!</h3>
-      <p class="decks-empty" style="margin-bottom:12px">
-        <b>1️⃣</b> Entra a <b>📚 Mazos</b> y fija 📌 los que quieras practicar ·
-        <b>2️⃣</b> Toca <b>Jugar ▶</b> y elige modo y dificultad ·
-        <b>3️⃣</b> Cumple tu meta diaria y pasa por el <b>🎙️ Baúl</b> para hablar libre.
-      </p>
-      <button id="btn-welcome-ok" class="btn primary">¡Entendido! ☀️</button>
-    </section>
 
     <section id="rank-banner" class="rank-banner">
       <span class="rank-badge">
@@ -87,7 +74,7 @@
       <div class="goal-track"><div id="goal-fill" class="goal-fill"></div></div>
     </section>
 
-    <section class="goal-bar" title="Cuenta el tiempo con una ronda o el Baúl abiertos">
+    <section class="goal-bar" title="Cuenta el tiempo con una ronda o el Talk abiertos">
       <div class="goal-text">
         <span>⏱ Tiempo practicando</span>
         <span id="time-today">0 min hoy</span>
@@ -123,7 +110,7 @@
     </section>
 
     <footer class="home-footer">
-      ☀️ Joy English · 100 % gratis y sin límites · Inspirado en Clozemaster ·
+      ☀️ English Plus · 100 % gratis y sin límites · Inspirado en Clozemaster ·
       Tu progreso se guarda en este navegador<br>
       Muchas frases son de <a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba.org</a>
       (CC BY 2.0 FR)
@@ -268,7 +255,7 @@
           <div class="stat-value" id="t-mastered">0</div>
           <div class="stat-label">Frases aprendidas</div>
         </div>
-        <div class="stat" title="Tiempo con una ronda o el Baúl abiertos">
+        <div class="stat" title="Tiempo con una ronda o el Talk abiertos">
           <div class="stat-value" id="t-time">0 min</div>
           <div class="stat-label">Tiempo practicando</div>
         </div>
@@ -314,7 +301,7 @@
   <!-- ============ BAÚL: HABLA LIBRE (BETA) ============ -->
   <main id="screen-vault" class="screen hidden">
     <header class="game-header">
-      <h2 class="screen-title">🎙️ Baúl — Habla libre <span class="beta-badge">BETA</span></h2>
+      <h2 class="screen-title">🎙️ Talk — Habla libre <span class="beta-badge">BETA</span></h2>
     </header>
 
     <section id="vault-review" class="vault-block hidden">
@@ -538,6 +525,11 @@
   <dialog id="settings-modal" class="settings-modal">
     <h2>⚙️ Ajustes</h2>
 
+    <div class="setting-row" id="settings-google-row">
+      <span id="google-signin-status">☁️ Sin sincronizar</span>
+      <button id="btn-google-signin" class="btn secondary">Iniciar sesión con Google</button>
+    </div>
+
     <label class="setting-row">
       <span>Frases por ronda</span>
       <select id="set-session">
@@ -606,12 +598,12 @@
   <nav id="bottom-nav" class="bottom-nav">
     <button id="nav-home" data-nav class="active">🏠<small>Inicio</small></button>
     <button id="nav-decks" data-nav>📚<small>Mazos</small></button>
-    <button id="nav-vault" data-nav>🎙️<small>Baúl</small></button>
+    <button id="nav-vault" data-nav>🎙️<small>Talk</small></button>
     <button id="nav-stats" data-nav>📊<small>Progreso</small></button>
   </nav>
 
   <script src="js/data.js?v=32"></script>
-  <script src="js/app.js?v=44"></script>
+  <script src="js/app.js?v=45"></script>
   <script type="module" src="js/firebase-sync.js?v=2"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)

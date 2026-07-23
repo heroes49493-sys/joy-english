@@ -1,4 +1,4 @@
-/* Joy English ☀️ — tema negro + amarillo (marca personal) */
+/* English Plus ☀️ — tema negro + amarillo (marca personal) */
 
 :root {
   --bg: #0a0a0a;
@@ -77,10 +77,6 @@ body {
 .top-actions { display: flex; gap: 8px; }
 .top-actions .icon-btn { width: 42px; height: 42px; font-size: 1.15rem; }
 
-/* ☁️ Iniciar sesión con Google (sincronizar progreso) */
-.google-signin { padding: 0; overflow: hidden; }
-.google-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -138,6 +134,7 @@ body {
 .chart-title { font-size: .85rem; color: var(--text-dim); margin-bottom: 8px; }
 
 .history-chart {
+  position: relative;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -157,9 +154,33 @@ body {
 .chart-goalline { stroke: rgba(251, 191, 36, .5); stroke-width: 2; stroke-dasharray: 6 5; }
 .chart-dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.5; }
 .chart-dot.goal-met { fill: var(--green); }
-.chart-num { fill: var(--text-dim); font-size: 12px; text-anchor: middle; }
+.chart-dot-hit { fill: transparent; cursor: pointer; }
 .chart-xlabel { fill: var(--text-dim); font-size: 12px; text-anchor: middle; }
-.chart-summary { color: var(--text-dim); font-size: .78rem; margin-top: 8px; }
+
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%) translateY(-10px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: .78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  z-index: 5;
+}
+.chart-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--card);
+}
 .time-total-row { margin-top: 4px; font-size: .8rem; color: var(--text-dim); }
 
 .review-btn {

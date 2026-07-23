@@ -685,19 +685,14 @@
     svg += `<polyline points="${line}" class="chart-line"/>`;
     series.forEach((p, i) => {
       svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="4" class="chart-dot ${goal && p.value >= goal ? "goal-met" : ""}"/>`;
-      if (p.value > 0) {
-        svg += `<text x="${x(i).toFixed(1)}" y="${(y(p.value) - 9).toFixed(1)}" class="chart-num">${p.value}</text>`;
-      }
+      // Círculo invisible más grande encima: el punto visible (r=4) es muy
+      // chico para tocarlo bien en el teléfono, esto amplía el área de toque.
+      svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="12" data-i="${i}" class="chart-dot-hit"/>`;
       if (i % labelEvery === 0) {
         svg += `<text x="${x(i).toFixed(1)}" y="${H - 6}" class="chart-xlabel">${p.label}</text>`;
       }
     });
     svg += "</svg>";
-
-    // Resumen de constancia: cuántos días practicaste en el periodo visible
-    const practicedDays = series.reduce((a, p) => a + p.practiced, 0);
-    const range = { days: "los últimos 14 días", weeks: "las últimas 12 semanas", months: "los últimos 12 meses" }[view];
-    const summary = `🔥 ${practicedDays} día${practicedDays === 1 ? "" : "s"} con práctica en ${range}`;
 
     el.innerHTML = `
       <div class="chart-toggle">
@@ -705,13 +700,39 @@
           `<button type="button" class="word-chip ${view === id ? "selected" : ""}" data-chartview="${id}">${name}</button>`).join("")}
       </div>
       ${svg}
-      <div class="chart-summary">${summary}</div>`;
+      <div class="chart-tooltip hidden"></div>`;
 
     el.querySelectorAll("[data-chartview]").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.settings.chartView = btn.dataset.chartview;
         save();
         renderChart(el);
+      });
+    });
+
+    // Detallito por punto (pedido del usuario): en Mac aparece al pasar el
+    // mouse por encima; en teléfono (sin mouse) aparece al tocar el punto.
+    const tooltip = el.querySelector(".chart-tooltip");
+    const svgEl = el.querySelector(".chart-svg");
+    const showTooltip = (i) => {
+      const p = series[i];
+      const svgRect = svgEl.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const scaleX = svgRect.width / W, scaleY = svgRect.height / H;
+      tooltip.textContent = p.value > 0 ? `${p.label}: ${p.value} oraciones` : `${p.label}: sin práctica`;
+      tooltip.style.left = `${x(i) * scaleX + (svgRect.left - elRect.left)}px`;
+      tooltip.style.top = `${y(p.value) * scaleY + (svgRect.top - elRect.top)}px`;
+      tooltip.dataset.i = String(i);
+      tooltip.classList.remove("hidden");
+    };
+    el.querySelectorAll(".chart-dot-hit").forEach((dot) => {
+      const i = Number(dot.dataset.i);
+      dot.addEventListener("mouseenter", () => showTooltip(i));
+      dot.addEventListener("mouseleave", () => tooltip.classList.add("hidden"));
+      dot.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !tooltip.classList.contains("hidden") && tooltip.dataset.i === String(i);
+        isOpen ? tooltip.classList.add("hidden") : showTooltip(i);
       });
     });
   }
@@ -812,7 +833,6 @@
   }
 
   function renderHome() {
-    $("welcome-card").classList.toggle("hidden", state.welcomed);
     renderRankBanner();
     const daily = todayHistory();
     $("stat-today").textContent = daily.played.toLocaleString("es");
@@ -2189,7 +2209,7 @@
 
   function reportsToMarkdown() {
     const lines = [
-      "# 🚩 Reportes de errores — Joy English",
+      "# 🚩 Reportes de errores — English Plus",
       "",
       `Exportado: ${today()} · ${state.bugReports.length} reporte(s)`,
       "",
@@ -2252,7 +2272,7 @@
 
   function suggestionsToMarkdown() {
     const lines = [
-      "# 💬 Sugerencias de organización de mazos — Joy English",
+      "# 💬 Sugerencias de organización de mazos — English Plus",
       "",
       `Exportado: ${today()} · ${state.deckFeedback.length} sugerencia(s)`,
       "",
@@ -2565,7 +2585,7 @@
         $("settings-modal").close();
         renderHome();
       } catch {
-        alert("El archivo no es un progreso válido de Joy English.");
+        alert("El archivo no es un progreso válido de English Plus.");
       }
     };
     reader.readAsText(file);
@@ -3328,7 +3348,7 @@
         if (drill.items[drill.pos]?.id === id) {
           box.innerHTML =
             "💡 Este error no tiene explicación guardada. Enciende el servidor de IA " +
-            "(doble clic en “Iniciar Joy English”) y vuelve a practicarlo para que te explique el porqué.";
+            "(doble clic en “Iniciar English Plus”) y vuelve a practicarlo para que te explique el porqué.";
         }
       });
   }
@@ -3371,7 +3391,7 @@
     } catch (err) {
       popup.innerHTML = `<div class="word-popup-loading">⚠️ ${escapeHtml(
         err.message === "Failed to fetch"
-          ? "Enciende el servidor de IA (\"Iniciar Joy English\") para usar el diccionario."
+          ? "Enciende el servidor de IA (\"Iniciar English Plus\") para usar el diccionario."
           : err.message
       )}</div>`;
     }
@@ -3396,6 +3416,10 @@
     if (span) { showWordPopup(span); return; }
     // Tocar afuera de una palabra y afuera del popup lo cierra
     if (!e.target.closest("#word-popup")) $("word-popup")?.classList.add("hidden");
+    // Tocar afuera de un punto del gráfico cierra su detallito
+    if (!e.target.closest(".chart-dot-hit")) {
+      document.querySelectorAll(".chart-tooltip").forEach((t) => t.classList.add("hidden"));
+    }
   });
 
   function checkDrill() {
@@ -3477,12 +3501,6 @@
     $("vault-err-text").value = "";
     $("vault-err-fix").value = "";
     renderVaultErrors();
-  });
-
-  $("btn-welcome-ok").addEventListener("click", () => {
-    state.welcomed = true;
-    save();
-    $("welcome-card").classList.add("hidden");
   });
 
   $("btn-drill").addEventListener("click", startDrill);
@@ -3584,22 +3602,21 @@
     // eso a la nube al instante.
     cloudSaveTimer = setTimeout(() => {
       window.JoyCloud.saveState(cloudUser.uid, state).catch((e) => {
-        console.warn("Joy English — no se pudo guardar en la nube:", e);
+        console.warn("English Plus — no se pudo guardar en la nube:", e);
       });
     }, 3000);
   }
 
   function renderGoogleSigninButton() {
     const btn = $("btn-google-signin");
-    if (!btn) return;
+    const status = $("google-signin-status");
+    if (!btn || !status) return;
     if (cloudUser) {
-      btn.title = `${cloudUser.displayName || cloudUser.email} · Tocar para cerrar sesión`;
-      btn.innerHTML = cloudUser.photoURL
-        ? `<img src="${cloudUser.photoURL}" alt="" class="google-avatar">`
-        : "☁️";
+      status.textContent = `☁️ ${cloudUser.displayName || cloudUser.email}`;
+      btn.textContent = "Cerrar sesión";
     } else {
-      btn.title = "Iniciar sesión con Google (sincronizar tu progreso)";
-      btn.innerHTML = `<span id="google-signin-icon">🔐</span>`;
+      status.textContent = "☁️ Sin sincronizar";
+      btn.textContent = cloudReady ? "Iniciar sesión con Google" : "Cargando…";
     }
   }
 
@@ -3622,7 +3639,7 @@
         showToast("☁️ Tu progreso ahora se sincroniza con tu cuenta de Google", true);
       }
     } catch (e) {
-      console.warn("Joy English — error sincronizando con la nube:", e);
+      console.warn("English Plus — error sincronizando con la nube:", e);
       showToast("⚠️ No se pudo sincronizar con la nube. Sigue guardado en este navegador.", true);
     }
   }
@@ -3630,15 +3647,9 @@
   let cloudReady = false;
   window.addEventListener("joycloud-ready", () => {
     cloudReady = true;
-    $("btn-google-signin")?.classList.remove("hidden");
+    renderGoogleSigninButton();
     window.JoyCloud.onAuthChange(handleGoogleAuthChange);
   });
-  // Si a los 4s no llegó "joycloud-ready" (sin internet, CDN de Firebase
-  // bloqueado, etc.) igual mostramos el botón: al tocarlo se explica por qué
-  // no funciona, en vez de quedar invisible y parecer que la app está rota.
-  setTimeout(() => {
-    if (!cloudReady) $("btn-google-signin")?.classList.remove("hidden");
-  }, 4000);
 
   $("btn-google-signin").addEventListener("click", async () => {
     if (!cloudReady || !window.JoyCloud) {
@@ -3656,7 +3667,7 @@
     try {
       await window.JoyCloud.signIn();
     } catch (e) {
-      console.warn("Joy English — error al iniciar sesión con Google:", e);
+      console.warn("English Plus — error al iniciar sesión con Google:", e);
       showToast(`⚠️ No se pudo iniciar sesión (${e.code || e.message || "error desconocido"})`, true);
     } finally {
       btn.disabled = false;
