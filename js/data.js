@@ -7288,5 +7288,247 @@ const COLLECTIONS = [
         gram: "'gain weight' = engordar. Lo opuesto es 'to lose weight' (adelgazar)."
       }
     ]
+  },
+  {
+    id: "class237",
+    name: "Clase 23.7 · Superlativos, Others y Phrasal Verbs",
+    desc: "Gramática de tu clase: adjetivos superlativos, another/other/the others, vocabulario de verbos y phrasal verbs",
+    icon: "🧩",
+    sentences: [
+      {
+        t: "This is the {{tallest}} building in the city.",
+        es: "Este es el edificio más alto de la ciudad.",
+        pos: "adj",
+        gram: "Adjetivo de UNA sílaba: se agrega '-est' para el superlativo. tall → tallest. Igual que 'big → biggest' de tu clase."
+      },
+      {
+        t: "He is the {{fastest}} runner on the team.",
+        es: "Él es el corredor más rápido del equipo.",
+        pos: "adj",
+        gram: "Adjetivo de una sílaba + '-est': fast → fastest. Se usa con 'the' delante: the fastest."
+      },
+      {
+        t: "That was the {{happiest}} day of my life.",
+        es: "Ese fue el día más feliz de mi vida.",
+        pos: "adj",
+        gram: "Adjetivo de DOS sílabas terminado en '-y': se cambia la 'y' por 'i' y se agrega '-est'. happy → happiest. Igual que 'busy → busiest' de tu clase."
+      },
+      {
+        t: "This is the {{easiest}} exercise in the book.",
+        es: "Este es el ejercicio más fácil del libro.",
+        pos: "adj",
+        gram: "Adjetivo de dos sílabas en '-y': easy → easiest (cambia la 'y' por 'i' + '-est')."
+      },
+      {
+        t: "That is the {{most}} expensive restaurant in town.",
+        es: "Ese es el restaurante más caro de la ciudad.",
+        pos: "adv",
+        gram: "Adjetivo de dos sílabas o más (que NO termine en '-y'): se coloca 'the most' antes, nunca se agrega '-est'. Igual que 'the most important' de tu clase."
+      },
+      {
+        t: "She is the {{most}} beautiful woman I have ever met.",
+        es: "Ella es la mujer más hermosa que he conocido.",
+        pos: "adv",
+        gram: "Adjetivo largo (beautiful): 'the most beautiful', nunca 'beautifulest'. 'The most' + adjetivo es la regla para adjetivos de 3+ sílabas."
+      },
+      {
+        t: "Can I have {{another}} cup of coffee, please?",
+        es: "¿Me puedes dar otra taza de café, por favor?",
+        pos: "pron",
+        gram: "'Another' (an + other) = otro/otra (distinto U otro más). Se usa con sustantivos EN SINGULAR: another cup, another book."
+      },
+      {
+        t: "I don't like this shirt, show me {{another}} one.",
+        es: "No me gusta esta camisa, muéstrame otra.",
+        pos: "pron",
+        gram: "'Another' también funciona solo (sin sustantivo detrás), con el mismo significado: 'otra' (distinta)."
+      },
+      {
+        t: "I have two brothers: one lives in Madrid, the {{other}} lives in Paris.",
+        es: "Tengo dos hermanos: uno vive en Madrid, el otro vive en París.",
+        pos: "pron",
+        gram: "'The other' (el otro) se refiere al RESTO de un grupo ya determinado (aquí, de dos hermanos). En singular funciona como pronombre."
+      },
+      {
+        t: "Where is the {{other}} half of the sandwich?",
+        es: "¿Dónde está la otra mitad del sándwich?",
+        pos: "pron",
+        gram: "'The other' también funciona como adjetivo delante de un sustantivo: the other half = la otra mitad."
+      },
+      {
+        t: "Do you have any {{other}} questions before we start?",
+        es: "¿Tienes alguna otra pregunta antes de empezar?",
+        pos: "pron",
+        gram: "'Other' (sin 'the') = otros/otras DISTINTOS. Se usa con sustantivos en plural contable (questions) o incontable, sin referirse a un grupo específico."
+      },
+      {
+        t: "I don't need any {{other}} help, thank you.",
+        es: "No necesito ninguna otra ayuda, gracias.",
+        pos: "pron",
+        gram: "'Other' con sustantivo incontable (help): no lleva 's', pero el significado sigue siendo 'otro/otros distintos'."
+      },
+      {
+        t: "I finished half the exercises, I'll do the {{others}} tomorrow.",
+        es: "Terminé la mitad de los ejercicios, haré los otros mañana.",
+        pos: "pron",
+        gram: "'The others' = los otros/las otras. Se usa SOLO (nunca antes de un sustantivo) para referirse al resto de las unidades de un grupo."
+      },
+      {
+        t: "Some students passed the test, but the {{others}} have to repeat it.",
+        es: "Algunos estudiantes pasaron el examen, pero los otros tienen que repetirlo.",
+        pos: "pron",
+        gram: "'The others' (pronombre plural) = el resto del grupo. Comparar con 'the other' (singular) y 'other' (sin artículo, distintos en general)."
+      },
+      {
+        t: "He {{stabbed}} his best friend in the back by lying to their boss.",
+        es: "Apuñaló a su mejor amigo mintiéndole a su jefe.",
+        pos: "v",
+        gram: "'Stab somebody in the back' = apuñalar (traicionar) a alguien. Aquí en pasado: stabbed."
+      },
+      {
+        t: "I love {{skating}} on the frozen lake in winter.",
+        es: "Me encanta patinar en el lago congelado en invierno.",
+        pos: "v",
+        gram: "'Skating' = patinando (gerundio de 'to skate', patinar)."
+      },
+      {
+        t: "She was {{stirring}} the soup slowly with a wooden spoon.",
+        es: "Ella estaba removiendo la sopa lentamente con una cuchara de madera.",
+        pos: "v",
+        gram: "'Stirring' = removiendo (gerundio de 'to stir'). 'Stir the coffee' = remover el café, de tu clase."
+      },
+      {
+        t: "He {{pulled}} the nail out of the wall with pliers.",
+        es: "Sacó el clavo de la pared con un alicate.",
+        pos: "v",
+        gram: "'Pull a nail' = arrancar/sacar un clavo. Pasado regular: pulled."
+      },
+      {
+        t: "Can you {{sharpen}} this pencil for me?",
+        es: "¿Puedes sacarle punta a este lápiz?",
+        pos: "v",
+        gram: "'Sharpen a pencil' = sacarle punta a un lápiz."
+      },
+      {
+        t: "I hate {{ironing}} my shirts every Sunday.",
+        es: "Odio planchar mis camisas cada domingo.",
+        pos: "v",
+        gram: "'Ironing' = planchando (gerundio de 'to iron', planchar)."
+      },
+      {
+        t: "He {{lit}} a cigarette right after dinner.",
+        es: "Encendió un cigarro justo después de cenar.",
+        pos: "v",
+        gram: "'Light a cigarette' = encender un cigarro. Pasado irregular: light → lit."
+      },
+      {
+        t: "She {{untied}} the knot with her fingers.",
+        es: "Ella desató el nudo con los dedos.",
+        pos: "v",
+        gram: "'Untie a knot' = desatar un nudo. Pasado regular: untied."
+      },
+      {
+        t: "The priest {{blessed}} the wine before the ceremony.",
+        es: "El sacerdote bendijo el vino antes de la ceremonia.",
+        pos: "v",
+        gram: "'Bless the wine' = bendecir el vino. Pasado regular: blessed."
+      },
+      {
+        t: "He {{tightened}} the screw with a screwdriver.",
+        es: "Apretó el tornillo con un destornillador.",
+        pos: "v",
+        gram: "'Tighten a screw' = apretar un tornillo. Pasado regular: tightened."
+      },
+      {
+        t: "I try to {{work}} out three times a week.",
+        es: "Trato de hacer ejercicio tres veces por semana.",
+        pos: "v",
+        gram: "'Work out' = hacer ejercicio/entrenar. Ojo: distinto del 'work out' = resolver que ya viste en tu clase 23.5 ('we can work it out')."
+      },
+      {
+        t: "She {{works}} out at the gym every morning.",
+        es: "Ella entrena en el gimnasio cada mañana.",
+        pos: "v",
+        gram: "'Work out' (hacer ejercicio) con 'she' se conjuga 'works out'."
+      },
+      {
+        t: "He got all {{worked}} up before the interview.",
+        es: "Se puso todo nervioso antes de la entrevista.",
+        pos: "v",
+        gram: "'Get worked up' = ponerse nervioso/alterado por algo."
+      },
+      {
+        t: "Don't get {{worked}} up over something so small.",
+        es: "No te pongas nervioso por algo tan pequeño.",
+        pos: "v",
+        gram: "'Get worked up' = alterarse/ponerse nervioso — no confundir con 'work out' (hacer ejercicio/resolver)."
+      },
+      {
+        t: "Please {{write}} down your phone number here.",
+        es: "Por favor anota tu número de teléfono aquí.",
+        pos: "v",
+        gram: "'Write down' = anotar/escribir. Sinónimos de tu clase: 'take down', 'jot down' — los tres significan lo mismo."
+      },
+      {
+        t: "Let me {{jot}} down a few notes before I forget.",
+        es: "Déjame anotar unas notas antes de que se me olvide.",
+        pos: "v",
+        gram: "'Jot down' = anotar rápido/apuntar. Igual de informal que 'write down' y 'take down'."
+      },
+      {
+        t: "If you keep spending like that, you'll {{wind}} up broke.",
+        es: "Si sigues gastando así, acabarás sin dinero.",
+        pos: "v",
+        gram: "'Wind up' + adjetivo/gerundio = acabar/terminar por. 'You'll wind up broke' = terminarás sin plata."
+      },
+      {
+        t: "They {{wound}} up missing their flight.",
+        es: "Terminaron perdiendo su vuelo.",
+        pos: "v",
+        gram: "'Wound' es el pasado irregular de 'wind' (wind up = acabar por). 'Wind up + -ing' = terminar haciendo algo."
+      },
+      {
+        t: "We {{ended}} up talking for three hours straight.",
+        es: "Terminamos hablando por tres horas seguidas.",
+        pos: "v",
+        gram: "'End up + -ing' = acabar/terminar haciendo algo — sinónimo de 'wind up' (ya lo viste en tu clase 23.5)."
+      },
+      {
+        t: "I can't believe he {{walked}} out on his own wedding.",
+        es: "No puedo creer que abandonó su propia boda.",
+        pos: "v",
+        gram: "'Walk out on somebody/something' = abandonar, dejar plantado/colgado."
+      },
+      {
+        t: "She would never {{walk}} out on her family like that.",
+        es: "Ella nunca abandonaría a su familia así.",
+        pos: "v",
+        gram: "'Walk out on' = abandonar a alguien de repente, dejarlo colgado."
+      },
+      {
+        t: "Can I {{try}} on this jacket before I buy it?",
+        es: "¿Puedo probarme esta chaqueta antes de comprarla?",
+        pos: "v",
+        gram: "'Try on' = probarse ropa/calzado. Distinto de 'try' solo (intentar) y de 'try it' (probar comida)."
+      },
+      {
+        t: "She tried {{on}} five pairs of shoes at the store.",
+        es: "Ella se probó cinco pares de zapatos en la tienda.",
+        pos: "adv",
+        gram: "'Try on' = probarse ropa. La partícula 'on' es la que indica que es 'probarse', no solo 'intentar'."
+      },
+      {
+        t: "It's not that hard, just {{try}} it.",
+        es: "No es tan difícil, solo inténtalo.",
+        pos: "v",
+        gram: "'Try' sin objeto de comida = intentar. 'Try it' (con 'it' refiriéndose a comida) = probarlo/degustarlo."
+      },
+      {
+        t: "This cake is amazing, you have to {{try}} it.",
+        es: "Este pastel es increíble, tienes que probarlo.",
+        pos: "v",
+        gram: "'Try it' con comida = probarlo (degustar), distinto de 'try' (intentar) sin más contexto."
+      }
+    ]
   }
 ];
