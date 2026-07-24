@@ -1524,3 +1524,133 @@ body {
   88% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* ============================================================
+   🎨 INICIO rediseñado (handoff Claude Design "5a", 2026-07-23)
+   Alcance: SOLO la pantalla de inicio (.home-v2). El resto de la app
+   mantiene su tipografía y estilo. Tema oscuro único, como toda la app.
+   ============================================================ */
+.home-v2 {
+  font-family: "Plus Jakarta Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  gap: 12px;
+  padding-top: max(14px, env(safe-area-inset-top));
+}
+
+/* --- Barra superior: tiempo · rango · ajustes --- */
+.home-topbar { display: flex; align-items: stretch; gap: 10px; margin-bottom: 4px; }
+.time-corner {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 11px;
+  background: #141416; border: 1px solid #202024; border-radius: 15px;
+  padding: 10px 13px;
+}
+.time-corner-ic {
+  width: 38px; height: 38px; border-radius: 11px; flex: none;
+  background: #17171a; color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.time-corner-txt { min-width: 0; }
+.time-corner-main { font-size: 15px; font-weight: 800; color: #fafaf9; line-height: 1.1; }
+.time-corner-main span { font-size: 11px; font-weight: 600; color: #8b8781; }
+.time-corner-sub { font-size: 11px; font-weight: 500; color: #8b8781; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.rango-corner {
+  display: flex; align-items: center; gap: 9px; flex: none; cursor: pointer;
+  background: #141416; border: 1px solid #202024; border-radius: 15px; padding: 10px 13px;
+}
+.rango-corner-ic {
+  width: 38px; height: 38px; border-radius: 11px; flex: none;
+  background: linear-gradient(150deg, #fde047, #f5b301);
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  box-shadow: inset 0 2px 5px rgba(255,255,255,.4);
+}
+.rango-corner-txt { text-align: left; }
+.rango-corner-label { font-size: 9.5px; font-weight: 700; color: #8b8781; text-transform: uppercase; letter-spacing: .08em; }
+.rango-corner-name { font-size: 14px; font-weight: 800; color: #fafaf9; line-height: 1.1; }
+
+.icon-btn-square {
+  width: 44px; flex: none; border: none; border-radius: 15px;
+  background: #17171a; color: #8b8781; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-btn-square:active { background: #202024; }
+
+/* --- Nivel grande --- */
+.level-hero {
+  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #1c1a12, #131311);
+  border: 1px solid #2a2620; border-radius: 24px;
+  padding: 20px; text-align: center;
+}
+.level-hero-glow {
+  position: absolute; top: -40px; right: -40px; width: 140px; height: 140px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(245,179,1,.18), transparent 70%);
+  pointer-events: none;
+}
+.gems-chip {
+  position: absolute; top: 13px; right: 13px; z-index: 2;
+  display: flex; align-items: center; gap: 4px;
+  background: #17171a; border: 1px solid #2a2620; border-radius: 11px;
+  padding: 6px 11px; color: #c9c6c0; font: 700 11.5px "Plus Jakarta Sans", sans-serif;
+  cursor: pointer;
+}
+.gems-chip b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.level-ring { position: relative; width: 150px; height: 150px; margin: 4px auto 0; }
+.level-ring svg { display: block; }
+.level-ring #hp-level-ring { transition: stroke-dashoffset .6s ease; }
+.level-ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.level-ring-eyebrow { font-size: 10.5px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: .12em; }
+.level-ring-num { font-size: 48px; font-weight: 800; color: #fafaf9; line-height: 1; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.level-ring-xp { font-size: 12px; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.level-hero-sub { font-size: 12.5px; font-weight: 600; color: #c9c6c0; margin-top: 8px; }
+.level-hero-sub b { color: #fafaf9; font-weight: 800; }
+
+/* --- Racha + meta --- */
+.hero-row { display: flex; gap: 12px; }
+.streak-card {
+  flex: 1; background: #141416; border: 1px solid #202024; border-radius: 18px; padding: 14px 16px;
+}
+.streak-top { display: flex; align-items: center; gap: 7px; color: #fb923c; }
+.streak-top span { font-size: 22px; font-weight: 800; color: #fafaf9; font-variant-numeric: tabular-nums; }
+.streak-label { font-size: 11.5px; font-weight: 500; color: #8b8781; margin-top: 4px; }
+.meta-card {
+  flex: 1.3; background: #141416; border: 1px solid #202024; border-radius: 18px; padding: 14px 16px;
+}
+.meta-top { display: flex; justify-content: space-between; align-items: baseline; }
+.meta-top span:first-child { font-size: 11.5px; font-weight: 600; color: #8b8781; }
+.meta-top span:last-child { font-size: 12.5px; font-weight: 700; color: #fafaf9; font-variant-numeric: tabular-nums; }
+.meta-track { height: 8px; border-radius: 5px; background: #26262a; margin-top: 9px; overflow: hidden; }
+.meta-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 5px; transition: width .4s; }
+.meta-fill.done { background: var(--green); }
+.meta-sub { font-size: 11px; font-weight: 500; color: #8b8781; margin-top: 7px; }
+
+/* --- Mazos fijados (filas compactas) --- */
+.pinned-block { margin-top: 8px; }
+.pinned-head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 11px; }
+.pinned-head > span { font-size: 15px; font-weight: 800; color: #fafaf9; }
+.pinned-all { background: none; border: none; font: 600 12px "Plus Jakarta Sans", sans-serif; color: #8b8781; cursor: pointer; }
+.pinned-list { display: flex; flex-direction: column; gap: 10px; }
+.pinned-row {
+  display: flex; align-items: center; gap: 13px;
+  background: #141416; border: 1px solid #202024; border-radius: 18px; padding: 13px 14px;
+}
+.pinned-row-ic {
+  width: 46px; height: 46px; border-radius: 13px; flex: none;
+  background: #20201a; display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.pinned-row-txt { flex: 1; min-width: 0; }
+.pinned-row-name { font-size: 14.5px; font-weight: 700; color: #fafaf9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pinned-row-sub { font-size: 11.5px; font-weight: 500; color: #8b8781; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pinned-row-play {
+  width: 44px; height: 44px; border: none; border-radius: 13px; flex: none; cursor: pointer;
+  background: var(--accent); color: #1a1512;
+  display: flex; align-items: center; justify-content: center;
+}
+.pinned-row-play:disabled { opacity: .4; cursor: default; }
+.pinned-row-play:active { transform: scale(.94); }
+
+/* La sección de abajo (gráfico + stats + recientes) recupera algo de aire */
+.home-v2 .chart-block { margin-top: 22px; }

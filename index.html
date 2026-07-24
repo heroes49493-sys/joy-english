@@ -11,39 +11,91 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/styles.css?v=44">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=45">
 </head>
 <body>
 
   <!-- ============ PANTALLA DE INICIO ============ -->
-  <main id="screen-home" class="screen">
-    <header class="top-bar">
-      <div class="brand">
-        <span class="logo-sun">☀️</span>
-        <div>
-          <div class="logo">English <span>Plus</span></div>
-          <div class="tagline">Frase a frase, hasta la fluidez</div>
+  <main id="screen-home" class="screen home-v2">
+
+    <!-- Barra superior: tiempo (izq) · rango + ajustes (der) -->
+    <div class="home-topbar">
+      <div class="time-corner" title="Tiempo practicando hoy y total en la app">
+        <div class="time-corner-ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>
+        </div>
+        <div class="time-corner-txt">
+          <div class="time-corner-main"><b id="hp-time-today">0 min</b> <span>hoy</span></div>
+          <div class="time-corner-sub" id="hp-time-total">0 min en la app</div>
         </div>
       </div>
-      <nav class="top-actions">
-        <button id="btn-settings" class="icon-btn" title="Ajustes">⚙️</button>
-      </nav>
-    </header>
-
-    <section id="rank-banner" class="rank-banner">
-      <span class="rank-badge">
-        <span class="rank-badge-emoji" id="rank-badge-emoji">🌱</span>
-        <img class="rank-badge-img" id="rank-badge-img" alt="" onerror="this.style.display='none'">
-      </span>
-      <div class="rank-info">
-        <div class="rank-name" id="rank-name">Beginner</div>
-        <div class="rank-progress-text" id="rank-progress-text">0 XP</div>
-        <div class="goal-track"><div id="rank-fill" class="goal-fill"></div></div>
-      </div>
-      <button id="btn-shop" class="rank-gems-btn" title="Tienda">
-        <span id="gems-count">💎 0</span>
-        <small>Tienda</small>
+      <button id="btn-rango" class="rango-corner" title="Ver tu rango y progreso">
+        <div class="rango-corner-ic" id="hp-rango-ic">🌱</div>
+        <div class="rango-corner-txt">
+          <div class="rango-corner-label">Rango</div>
+          <div class="rango-corner-name" id="hp-rango-name">Beginner</div>
+        </div>
       </button>
+      <button id="btn-settings" class="icon-btn-square" title="Ajustes">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
+
+    <!-- Nivel grande -->
+    <section class="level-hero">
+      <div class="level-hero-glow"></div>
+      <button id="btn-shop" class="gems-chip" title="Tienda">💎 <b id="gems-count">0</b> · Tienda</button>
+      <div class="level-ring">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="60" fill="none" stroke="#26241c" stroke-width="12"></circle>
+          <circle id="hp-level-ring" cx="75" cy="75" r="60" fill="none" stroke="url(#gLevel)" stroke-width="12" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 75 75)"></circle>
+          <defs><linearGradient id="gLevel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde047"></stop><stop offset="1" stop-color="#f5b301"></stop></linearGradient></defs>
+        </svg>
+        <div class="level-ring-center">
+          <span class="level-ring-eyebrow">Tu nivel</span>
+          <span class="level-ring-num" id="hp-level-num">1</span>
+          <span class="level-ring-xp" id="hp-level-xp">0 XP</span>
+        </div>
+      </div>
+      <div class="level-hero-sub" id="hp-level-sub">Te faltan 100 XP para el Nivel 2</div>
+    </section>
+
+    <!-- Racha + meta diaria -->
+    <section class="hero-row">
+      <div class="streak-card" title="Congeladores: si faltas un día, tu racha se salva sola">
+        <div class="streak-top">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s0 2 1.5 2S12 7 12 7s2 2 2 4a2 2 0 0 1-4 0"></path></svg>
+          <span id="hp-streak">0</span>
+        </div>
+        <div class="streak-label" id="hp-streak-label">días de racha</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-top"><span>Meta diaria</span><span id="hp-meta-count">0 / 20</span></div>
+        <div class="meta-track"><div class="meta-fill" id="hp-meta-fill"></div></div>
+        <div class="meta-sub" id="hp-meta-sub">20 oraciones para tu meta</div>
+      </div>
+    </section>
+
+    <!-- Mazos fijados -->
+    <section class="pinned-block">
+      <div class="pinned-head">
+        <span>Mazos fijados</span>
+        <button id="btn-all-decks" class="pinned-all">Ver todos</button>
+      </div>
+      <div id="deck-list" class="pinned-list"></div>
+      <p id="decks-empty" class="decks-empty hidden">
+        No tienes mazos fijados. Toca <b>Ver todos</b> para elegir mazos y fijar
+        aquí los que estés practicando.
+      </p>
+    </section>
+
+    <!-- ▼▼ Debajo del rediseño: gráfico + stats + recientes (se mantienen igual) ▼▼ -->
+    <section class="chart-block">
+      <div class="chart-title">Tu actividad</div>
+      <div id="home-chart" class="history-chart"></div>
     </section>
 
     <section class="stats-bar">
@@ -66,48 +118,12 @@
       </div>
     </section>
 
-    <section class="goal-bar">
-      <div class="goal-text">
-        <span>🎯 Meta diaria</span>
-        <span id="goal-count">0 / 20 oraciones</span>
-      </div>
-      <div class="goal-track"><div id="goal-fill" class="goal-fill"></div></div>
-    </section>
-
-    <section class="goal-bar" title="Cuenta el tiempo con una ronda o el Talk abiertos">
-      <div class="goal-text">
-        <span>⏱ Tiempo practicando</span>
-        <span id="time-today">0 min hoy</span>
-      </div>
-      <div class="goal-text time-total-row">
-        <span></span>
-        <span id="time-total"></span>
-      </div>
-    </section>
-
-    <section class="chart-block">
-      <div class="chart-title">Tu actividad</div>
-      <div id="home-chart" class="history-chart"></div>
-    </section>
-
     <section id="recent-block" class="recent-block hidden">
       <h3 class="selector-label">🕐 Recientes</h3>
       <div id="recent-list" class="collections"></div>
     </section>
 
     <section id="collections" class="collections"></section>
-
-    <section class="decks-block">
-      <div class="decks-header">
-        <h3>📌 Mazos fijados</h3>
-        <button id="btn-all-decks" class="btn secondary">📚 Todos los mazos</button>
-      </div>
-      <div id="deck-list" class="collections"></div>
-      <p id="decks-empty" class="decks-empty hidden">
-        No tienes mazos fijados en el inicio. Entra a <b>📚 Todos los mazos</b> para
-        crear mazos con tus propias frases y fijar aquí los que estés practicando.
-      </p>
-    </section>
 
     <footer class="home-footer">
       ☀️ English Plus · 100 % gratis y sin límites · Inspirado en Clozemaster ·
@@ -603,7 +619,7 @@
   </nav>
 
   <script src="js/data.js?v=33"></script>
-  <script src="js/app.js?v=45"></script>
+  <script src="js/app.js?v=46"></script>
   <script type="module" src="js/firebase-sync.js?v=2"></script>
   <script>
     // App instalable: el service worker guarda todo en caché (funciona sin servidor)

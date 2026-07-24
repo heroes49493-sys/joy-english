@@ -812,48 +812,79 @@
     });
   }
 
-  // Pinta una insignia: emoji por defecto + imagen opcional encima (icons/ranks/<id>.png).
-  // Si el archivo no existe, onerror ya está puesto en el <img> del HTML y lo oculta solo.
-  function renderRankBadge(emojiEl, imgEl, rank) {
-    emojiEl.textContent = rank.icon;
-    imgEl.style.display = "";
-    imgEl.src = `icons/ranks/${rank.id}.png`;
+  // Rango (esquina superior derecha del inicio) + gemas de la tienda
+  function renderRankBanner() {
+    const { rank } = rankInfo(state.points);
+    $("hp-rango-ic").textContent = rank.icon;
+    $("hp-rango-name").textContent = rank.name;
+    $("gems-count").textContent = state.gems;
   }
 
-  function renderRankBanner() {
-    const { rank, next, pct, pointsToNext } = rankInfo(state.points);
-    renderRankBadge($("rank-badge-emoji"), $("rank-badge-img"), rank);
-    $("rank-name").textContent = rank.name;
-    $("rank-progress-text").textContent = next
-      ? `${pointsToNext.toLocaleString("es")} XP para ${next.name}`
-      : "¡Rango máximo alcanzado! 🎉";
-    $("rank-fill").style.width = `${pct}%`;
-    $("rank-fill").classList.toggle("done", !next);
-    $("gems-count").textContent = `💎 ${state.gems}`;
+  // Anillo de nivel grande del inicio (circunferencia 2π·60 ≈ 377)
+  function renderLevelHero() {
+    const lvl = levelInfo(state.points);
+    $("hp-level-num").textContent = lvl.level;
+    $("hp-level-xp").textContent = `${state.points.toLocaleString("es")} XP`;
+    const C = 377;
+    $("hp-level-ring").setAttribute("stroke-dashoffset", C * (1 - lvl.pct / 100));
+    const next = 100 * lvl.level ** 2;
+    $("hp-level-sub").innerHTML =
+      `Te faltan <b>${(next - state.points).toLocaleString("es")} XP</b> para el Nivel ${lvl.level + 1}`;
+  }
+
+  // Fila compacta de mazo fijado (inicio): ícono · nombre · "N por repasar" · ▶
+  function pinnedDeckRow(col, stats) {
+    const isDeck = col.id.startsWith("deck-");
+    const sub = isDeck
+      ? `${col.sentences.length} frases · ${stats.review} por repasar`
+      : `${col.desc || col.sentences.length + " frases"} · ${stats.review} por repasar`;
+    const row = document.createElement("div");
+    row.className = "pinned-row";
+    row.innerHTML = `
+      <div class="pinned-row-ic">${escapeHtml(col.icon)}</div>
+      <div class="pinned-row-txt">
+        <div class="pinned-row-name">${escapeHtml(col.name)}</div>
+        <div class="pinned-row-sub">${escapeHtml(sub)}</div>
+      </div>
+      <button class="pinned-row-play" data-play="${col.id}" ${col.sentences.length ? "" : "disabled"} title="Jugar ${escapeHtml(col.name)}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"></path></svg>
+      </button>`;
+    return row;
   }
 
   function renderHome() {
     renderRankBanner();
+    renderLevelHero();
     const daily = todayHistory();
+
+    // ⏱ Tiempo practicando — esquina superior izquierda del inicio
+    $("hp-time-today").textContent = fmtPractice(daily.seconds || 0);
+    $("hp-time-total").textContent = `Total: ${fmtPractice(totalPracticeSeconds())}`;
+
+    // 🔥 Racha
+    $("hp-streak").textContent = state.streak.count;
+    $("hp-streak-label").textContent =
+      state.streak.freezes > 0 ? `días · 🧊×${state.streak.freezes}` : "días de racha";
+
+    // 🎯 Meta diaria en ORACIONES practicadas
+    const goal = state.settings.dailyGoal;
+    const left = Math.max(0, goal - daily.played);
+    $("hp-meta-count").textContent = `${daily.played} / ${goal}`;
+    $("hp-meta-fill").style.width = `${Math.min(100, Math.round((daily.played / goal) * 100))}%`;
+    $("hp-meta-fill").classList.toggle("done", daily.played >= goal);
+    $("hp-meta-sub").textContent = left > 0
+      ? `${left} oración${left === 1 ? "" : "es"} para tu meta`
+      : "¡Meta diaria cumplida! 🎉";
+
+    // ▼ Bloque de abajo (se mantiene): stats grid + gráfico
     $("stat-today").textContent = daily.played.toLocaleString("es");
     $("stat-streak").textContent = `🔥 ${state.streak.count}`;
     $("stat-streak-label").textContent =
       state.streak.freezes > 0 ? `Días seguidos · 🧊×${state.streak.freezes}` : "Días seguidos";
-
     const lvl = levelInfo(state.points);
     $("stat-level").textContent = lvl.level;
     $("stat-level-label").textContent = `Nivel · ${state.points.toLocaleString("es")} XP`;
     $("level-fill").style.width = `${lvl.pct}%`;
-
-    // Meta diaria en ORACIONES practicadas
-    const goal = state.settings.dailyGoal;
-    $("goal-count").textContent = `${daily.played} / ${goal} oraciones`;
-    $("goal-fill").style.width = `${Math.min(100, Math.round((daily.played / goal) * 100))}%`;
-    $("goal-fill").classList.toggle("done", daily.played >= goal);
-
-    // ⏱ Tiempo practicando (hoy + total histórico)
-    $("time-today").textContent = `${fmtPractice(daily.seconds || 0)} hoy`;
-    $("time-total").textContent = `Total: ${fmtPractice(totalPracticeSeconds())}`;
 
     renderChart($("home-chart"));
 
@@ -886,18 +917,14 @@
       wrap.appendChild(collectionCard(favCol, favoritesStats(favs)));
     }
 
-    // Solo lo FIJADO aparece en el inicio; el catálogo completo vive en 📚 Mazos
+    // Solo lo FIJADO aparece en el inicio (filas compactas); el catálogo
+    // completo con progreso/editar/sugerir vive en 📚 Mazos ("Ver todos").
     const deckWrap = $("deck-list");
     deckWrap.innerHTML = "";
     const pinned = allCollections().filter(isPinnedCol);
     $("decks-empty").classList.toggle("hidden", pinned.length > 0);
-    $("btn-all-decks").textContent = `📚 Todos los mazos (${allCollections().length})`;
     pinned.forEach((col) => {
-      const isDeck = col.id.startsWith("deck-");
-      const extra = isDeck
-        ? `<button class="deck-edit-link" data-edit="${col.id}">✏️ Editar</button>` : "";
-      const view = isDeck ? { ...col, desc: `${col.sentences.length} frases · mazo tuyo` } : col;
-      deckWrap.appendChild(collectionCard(view, collectionStats(col), extra));
+      deckWrap.appendChild(pinnedDeckRow(col, collectionStats(col)));
     });
 
     bindPlayButtons(wrap);
@@ -2516,6 +2543,9 @@
     renderShop();
     $("shop-modal").showModal();
   });
+
+  // El rango de la esquina abre la pantalla de Progreso (escalera de rangos)
+  $("btn-rango").addEventListener("click", renderStats);
   $("btn-shop-close").addEventListener("click", () => $("shop-modal").close());
 
   $("btn-settings").addEventListener("click", openSettings);
