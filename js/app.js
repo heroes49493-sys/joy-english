@@ -876,39 +876,12 @@
       ? `${left} oración${left === 1 ? "" : "es"} para tu meta`
       : "¡Meta diaria cumplida! 🎉";
 
-    // ▼ Bloque de abajo (se mantiene): stats grid + gráfico
-    $("stat-today").textContent = daily.played.toLocaleString("es");
-    $("stat-streak").textContent = `🔥 ${state.streak.count}`;
-    $("stat-streak-label").textContent =
-      state.streak.freezes > 0 ? `Días seguidos · 🧊×${state.streak.freezes}` : "Días seguidos";
-    const lvl = levelInfo(state.points);
-    $("stat-level").textContent = lvl.level;
-    $("stat-level-label").textContent = `Nivel · ${state.points.toLocaleString("es")} XP`;
-    $("level-fill").style.width = `${lvl.pct}%`;
-
     renderChart($("home-chart"));
 
-    // Mazos y colecciones usados recientemente
-    const recentWrap = $("recent-list");
-    recentWrap.innerHTML = "";
-    const recents = state.recent.map(findCollection).filter(Boolean);
-    $("recent-block").classList.toggle("hidden", recents.length === 0);
-    recents.forEach((col) => {
-      const view = col.id.startsWith("deck-")
-        ? { ...col, desc: `${col.sentences.length} frases · mazo tuyo` }
-        : col;
-      recentWrap.appendChild(collectionCard(view, collectionStats(col)));
-    });
-    bindPlayButtons(recentWrap);
-
-    // "Aprendidas" cuenta TODO el banco, esté fijado o no
-    let totalMastered = 0;
-    allCollections().forEach((c) => { totalMastered += collectionStats(c).mastered; });
-    $("stat-mastered").textContent = totalMastered;
-
+    // Favoritas: solo aparece si marcaste frases con ⭐ (el resto del inicio
+    // viejo — stats grid y recientes — se quitó por pedido del usuario).
     const wrap = $("collections");
     wrap.innerHTML = "";
-
     const favs = favoriteItems();
     if (favs.length > 0) {
       const favCol = { id: "__fav__", icon: "⭐", name: "Favoritas",
